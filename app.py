@@ -406,14 +406,20 @@ with col_right:
 
         st.markdown('<span class="section-label">Results</span>', unsafe_allow_html=True)
 
-        st.markdown(f"""
-<div class="stat-row">
-  <div class="stat-card total"><div class="stat-icon">#</div><div class="stat-num">{total}</div><div class="stat-lbl">Total</div></div>
-  <div class="stat-card valid"><div class="stat-icon">&#10003;</div><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Valid</div></div>
-  <div class="stat-card invalid"><div class="stat-icon">&#10007;</div><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Invalid</div></div>
-  <div class="stat-card error"><div class="stat-icon">!</div><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Error</div></div>
-</div>
-""", unsafe_allow_html=True)
+        st.markdown(
+            f'<div style="display:flex;align-items:center;gap:1.5rem;background:#1a1a1a;border:1px solid #2a2a2a;'
+            'border-radius:6px;padding:0.6rem 1.2rem;margin-bottom:1rem;">'
+            f'<span style="color:#888;font-size:0.85rem;font-weight:600;">{total} total</span>'
+            f'<span style="color:#3a3a3a;margin:0 0.2rem;">|</span>'
+            f'<span style="color:#4a9d6f;font-size:0.85rem;font-weight:700;">&#10003; {len(valid_df)} valid</span>'
+            f'<span style="color:#3a3a3a;margin:0 0.2rem;">|</span>'
+            f'<span style="color:#E30613;font-size:0.85rem;font-weight:700;">&#10007; {len(invalid_df)} invalid</span>'
+            f'<span style="color:#3a3a3a;margin:0 0.2rem;">|</span>'
+            f'<span style="color:#c97d20;font-size:0.85rem;font-weight:700;">! {len(error_df)} error</span>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
 
         col_dl_xlsx, col_dl_xml, col_reset = st.columns([3, 3, 1])
         with col_dl_xlsx:
