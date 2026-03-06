@@ -298,11 +298,16 @@ col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
 
 with col_left:
     st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
-    st.markdown('<span class="section-hint">CSV or Excel file containing a column with VAT numbers</span>', unsafe_allow_html=True)
-    uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
+    st.markdown('<span class="section-hint">CSV, Excel or XML 2003 file containing a column with VAT numbers</span>', unsafe_allow_html=True)
+    uploaded = st.file_uploader("upload", type=["csv","xlsx","xls","xml"], label_visibility="collapsed")
     if uploaded:
         try:
-            df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
+            if uploaded.name.endswith(".csv"):
+                df_input = pd.read_csv(uploaded, dtype=str)
+            elif uploaded.name.endswith(".xml"):
+                df_input = pd.read_excel(uploaded, dtype=str, engine="xlrd")
+            else:
+                df_input = pd.read_excel(uploaded, dtype=str)
             vat_col = detect_vat_column(df_input)
             df_input = df_input.fillna("")
             st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
