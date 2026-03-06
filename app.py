@@ -23,7 +23,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 
     html, body, [class*="css"] { font-family: 'Barlow', sans-serif; }
-    .block-container { padding: 0 !important; max-width: 100% !important; }
+    .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; background: #f0f0f0; }
 
     /* ── Hero: stays dark ── */
     .hero {
@@ -43,11 +43,7 @@ st.markdown("""
     }
 
     /* ── Main content area: light background ── */
-    .main-area {
-        background: #f0f0f0;
-        padding: 2rem 2.5rem;
-        min-height: 100vh;
-    }
+    .main-area { display: contents; }
 
     /* ── Section labels ── */
     .section-label {
@@ -151,7 +147,7 @@ st.markdown("""
 
     hr { border-color: #dddddd !important; }
     #MainMenu, footer, header { visibility: hidden; }
-    .stApp { background-color: #f0f0f0; }
+    .stApp { background-color: #f0f0f0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
