@@ -320,177 +320,163 @@ if "results" not in st.session_state:
 if "scroll_to_results" not in st.session_state:
     st.session_state.scroll_to_results = False
 
-# ─── INPUT ──────────────────────────────────
+# ─── MAIN LAYOUT: left = upload, right = results ───
+col_left, col_divider, col_right = st.columns([5, 1, 6], gap="small")
+
 df_input = None
 vat_col  = "vat_number"
 
-st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
-st.markdown('<span class="section-hint">CSV, Excel (.xlsx / .xls) or Excel XML 2003 (.xml) — the file must contain a column with VAT numbers</span>', unsafe_allow_html=True)
+# ── LEFT: Upload ──
+with col_left:
+    st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-hint">CSV, Excel (.xlsx / .xls) or Excel XML 2003 (.xml)<br>The file must contain a column with VAT numbers.</span>', unsafe_allow_html=True)
 
-col_upload, col_spacer = st.columns([4, 6])
-with col_upload:
     uploaded = st.file_uploader("upload", type=["csv","xlsx","xls","xml"], label_visibility="collapsed")
 
-if uploaded:
-    try:
-        if uploaded.name.endswith(".csv"):
-            df_input = pd.read_csv(uploaded, dtype=str)
-        elif uploaded.name.endswith(".xml"):
-            import xml.etree.ElementTree as ET
-            import re as _re
-            content_bytes = uploaded.read()
-            root = ET.fromstring(content_bytes)
-            ns = {}
-            for elem in root.iter():
-                m = _re.match(r'\{([^}]+)\}', elem.tag)
-                if m:
-                    ns['ss'] = m.group(1)
+    if uploaded:
+        try:
+            if uploaded.name.endswith(".csv"):
+                df_input = pd.read_csv(uploaded, dtype=str)
+            elif uploaded.name.endswith(".xml"):
+                import xml.etree.ElementTree as ET
+                import re as _re
+                content_bytes = uploaded.read()
+                root = ET.fromstring(content_bytes)
+                ns = {}
+                for elem in root.iter():
+                    m = _re.match(r'\{([^}]+)\}', elem.tag)
+                    if m:
+                        ns['ss'] = m.group(1)
+                        break
+                def tag(name):
+                    return f"{{{ns['ss']}}}{name}" if ns else name
+                rows_data = []
+                headers = None
+                for worksheet in root.iter(tag('Worksheet')):
+                    for table in worksheet.iter(tag('Table')):
+                        for i, row in enumerate(table.iter(tag('Row'))):
+                            cells = []
+                            for cell in row.iter(tag('Cell')):
+                                data = cell.find(tag('Data'))
+                                cells.append(data.text if data is not None and data.text else "")
+                            if i == 0:
+                                headers = cells
+                            else:
+                                rows_data.append(cells)
                     break
-            def tag(name):
-                return f"{{{ns['ss']}}}{name}" if ns else name
-            rows_data = []
-            headers = None
-            for worksheet in root.iter(tag('Worksheet')):
-                for table in worksheet.iter(tag('Table')):
-                    for i, row in enumerate(table.iter(tag('Row'))):
-                        cells = []
-                        for cell in row.iter(tag('Cell')):
-                            data = cell.find(tag('Data'))
-                            cells.append(data.text if data is not None and data.text else "")
-                        if i == 0:
-                            headers = cells
-                        else:
-                            rows_data.append(cells)
-                break
-            if headers and rows_data:
-                rows_data = [r + [""] * (len(headers) - len(r)) for r in rows_data]
-                df_input = pd.DataFrame(rows_data, columns=headers).astype(str)
+                if headers and rows_data:
+                    rows_data = [r + [""] * (len(headers) - len(r)) for r in rows_data]
+                    df_input = pd.DataFrame(rows_data, columns=headers).astype(str)
+                else:
+                    raise ValueError("Could not read any data from XML file.")
             else:
-                raise ValueError("Could not read any data from XML file.")
-        else:
-            df_input = pd.read_excel(uploaded, dtype=str)
-        vat_col = detect_vat_column(df_input)
-        df_input = df_input.fillna("")
-        st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
-        df_input = None
+                df_input = pd.read_excel(uploaded, dtype=str)
+            vat_col = detect_vat_column(df_input)
+            df_input = df_input.fillna("")
+            st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Error reading file: {e}")
+            df_input = None
 
-# ─── VALIDATE BUTTON ────────────────────────
-st.markdown("<br>", unsafe_allow_html=True)
-col_btn, col_spacer = st.columns([2, 8])
-with col_btn:
+    st.markdown("<br>", unsafe_allow_html=True)
     has_input = df_input is not None and len(df_input) > 0
     label = f"Validate {len(df_input)} VAT numbers" if has_input else "Validate VAT numbers"
-    clicked = st.button(label, use_container_width=True, disabled=not has_input)
-    if clicked and has_input:
+    if st.button(label, use_container_width=False, disabled=not has_input):
         run_validation(df_input, vat_col)
-if df_input is None or len(df_input) == 0:
-    st.markdown("<span style='color:#555555; font-size:0.9rem;'>Upload a file or paste VAT numbers to get started.</span>", unsafe_allow_html=True)
 
-# ─── RESULTS ────────────────────────────────
-# Auto-scroll to results
-if st.session_state.get("scroll_to_results"):
-    st.components.v1.html(
-        '<script>setTimeout(function(){window.parent.scrollTo({top: window.parent.document.body.scrollHeight, behavior: "smooth"});}, 400);</script>',
-        height=0
-    )
-    st.session_state.scroll_to_results = False
+    if not has_input:
+        st.markdown("<span style='color:#555555; font-size:0.9rem;'>Upload a file to get started.</span>", unsafe_allow_html=True)
 
-if st.session_state.results is not None:
-    df_res = st.session_state.results
-    valid_df   = df_res[df_res["Status"]=="valid"]
-    invalid_df = df_res[df_res["Status"]=="invalid"]
-    error_df   = df_res[~df_res["Status"].isin(["valid","invalid"])]
-    total = len(df_res)
-
-    st.markdown("---")
-
-    st.markdown(f"""
-<div class="stat-row">
-  <div class="stat-card total">
-    <div class="stat-icon">#</div>
-    <div class="stat-num">{total}</div>
-    <div class="stat-lbl">Total</div>
-  </div>
-  <div class="stat-card valid">
-    <div class="stat-icon">&#10003;</div>
-    <div class="stat-num">{len(valid_df)}</div>
-    <div class="stat-lbl">Valid</div>
-  </div>
-  <div class="stat-card invalid">
-    <div class="stat-icon">&#10007;</div>
-    <div class="stat-num">{len(invalid_df)}</div>
-    <div class="stat-lbl">Invalid</div>
-  </div>
-  <div class="stat-card error">
-    <div class="stat-icon">!</div>
-    <div class="stat-num">{len(error_df)}</div>
-    <div class="stat-lbl">Error</div>
-  </div>
+# ── DIVIDER ──
+with col_divider:
+    st.markdown("""
+<div style="display:flex; flex-direction:column; align-items:center; height:500px; padding-top:2rem;">
+  <div style="flex:1; width:1px; background:#2a2a2a;"></div>
 </div>
 """, unsafe_allow_html=True)
 
-    col_dl_xlsx, col_dl_xml, col_reset, col_spacer = st.columns([3, 3, 1, 3])
-    with col_dl_xlsx:
-        st.download_button(
-            label="Download report (.xlsx)",
-            data=to_excel_bytes(df_res),
-            file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-    with col_dl_xml:
-        st.download_button(
-            label="Download report (.xml)",
-            data=to_xml_bytes(df_res),
-            file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xml",
-            mime="application/xml",
-            use_container_width=True
-        )
-    with col_reset:
-        if st.button("Reset", use_container_width=True):
-            st.session_state.results = None
-            st.rerun()
+# ── RIGHT: Results ──
+with col_right:
+    if st.session_state.results is not None:
+        df_res = st.session_state.results
+        valid_df   = df_res[df_res["Status"]=="valid"]
+        invalid_df = df_res[df_res["Status"]=="invalid"]
+        error_df   = df_res[~df_res["Status"].isin(["valid","invalid"])]
+        total = len(df_res)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<span class="section-label">Results</span>', unsafe_allow_html=True)
 
-    # Style status column — color + symbol, works without color perception
-    def style_status(val):
-        return {
-            "valid":   "color: #4a9d6f; font-weight: 600;",
-            "invalid": "color: #E30613; font-weight: 600;",
-        }.get(val, "color: #c97d20; font-weight: 600;")
+        st.markdown(f"""
+<div class="stat-row">
+  <div class="stat-card total"><div class="stat-icon">#</div><div class="stat-num">{total}</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-card valid"><div class="stat-icon">&#10003;</div><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Valid</div></div>
+  <div class="stat-card invalid"><div class="stat-icon">&#10007;</div><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Invalid</div></div>
+  <div class="stat-card error"><div class="stat-icon">!</div><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Error</div></div>
+</div>
+""", unsafe_allow_html=True)
 
-    # Display label column instead of raw status
-    display_cols = [c for c in df_res.columns if c != "Status"]
+        col_dl_xlsx, col_dl_xml, col_reset = st.columns([3, 3, 1])
+        with col_dl_xlsx:
+            st.download_button(
+                label="Download (.xlsx)",
+                data=to_excel_bytes(df_res),
+                file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+        with col_dl_xml:
+            st.download_button(
+                label="Download (.xml)",
+                data=to_xml_bytes(df_res),
+                file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xml",
+                mime="application/xml",
+                use_container_width=True
+            )
+        with col_reset:
+            if st.button("Reset", use_container_width=True):
+                st.session_state.results = None
+                st.rerun()
 
-    t1, t2, t3, t4 = st.tabs([
-        f"All results ({total})",
-        f"Valid ({len(valid_df)})",
-        f"Invalid ({len(invalid_df)})",
-        f"Error ({len(error_df)})"
-    ])
-    with t1:
-        st.dataframe(
-            df_res[display_cols].style.applymap(style_status, subset=["Status Label"]),
-            use_container_width=True, hide_index=True, height=400
-        )
-    with t2:
-        if len(valid_df) > 0:
-            st.dataframe(valid_df[display_cols], use_container_width=True, hide_index=True, height=400)
-        else:
-            st.info("No valid VAT numbers found.")
-    with t3:
-        if len(invalid_df) > 0:
-            st.dataframe(invalid_df[display_cols], use_container_width=True, hide_index=True, height=400)
-        else:
-            st.info("No invalid VAT numbers found.")
-    with t4:
-        if len(error_df) > 0:
-            st.dataframe(error_df[display_cols], use_container_width=True, hide_index=True, height=400)
-        else:
-            st.info("No errors found.")
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        def style_status(val):
+            return {
+                "valid":   "color: #4a9d6f; font-weight: 600;",
+                "invalid": "color: #E30613; font-weight: 600;",
+            }.get(val, "color: #c97d20; font-weight: 600;")
+
+        display_cols = [c for c in df_res.columns if c != "Status"]
+
+        t1, t2, t3, t4 = st.tabs([
+            f"All results ({total})",
+            f"Valid ({len(valid_df)})",
+            f"Invalid ({len(invalid_df)})",
+            f"Error ({len(error_df)})"
+        ])
+        with t1:
+            st.dataframe(df_res[display_cols].style.applymap(style_status, subset=["Status Label"]),
+                         use_container_width=True, hide_index=True, height=400)
+        with t2:
+            if len(valid_df) > 0:
+                st.dataframe(valid_df[display_cols], use_container_width=True, hide_index=True, height=400)
+            else:
+                st.info("No valid VAT numbers found.")
+        with t3:
+            if len(invalid_df) > 0:
+                st.dataframe(invalid_df[display_cols], use_container_width=True, hide_index=True, height=400)
+            else:
+                st.info("No invalid VAT numbers found.")
+        with t4:
+            if len(error_df) > 0:
+                st.dataframe(error_df[display_cols], use_container_width=True, hide_index=True, height=400)
+            else:
+                st.info("No errors found.")
+    else:
+        st.markdown("""
+<div style="height:300px; display:flex; align-items:center; justify-content:center;">
+  <span style="color:#333333; font-size:0.9rem;">Results will appear here after validation.</span>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 st.markdown("<p style='color:#333333; font-size:0.8rem; text-align:center;'>Mammoet Data Migration Team &nbsp;&middot;&nbsp; VIES API (European Commission) &nbsp;&middot;&nbsp; SAP ECC &rarr; S/4HANA</p>", unsafe_allow_html=True)
