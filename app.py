@@ -48,6 +48,11 @@ st.markdown("""
         color: #aaaaaa; font-size: 1rem; margin-top: 0.5rem;
         font-weight: 400; white-space: nowrap;
     }
+    .hero-contact {
+        color: #666666; font-size: 0.85rem; margin-top: 0.3rem;
+    }
+    .hero-contact a { color: #E30613; text-decoration: none; }
+    .hero-contact a:hover { text-decoration: underline; }
 
     /* ── Content padding ── */
     .content-pad { padding: 1.5rem 2.5rem; }
@@ -300,6 +305,7 @@ st.markdown("""
 <div class="hero">
     <div class="hero-title">VAT <span>VALIDATOR</span></div>
     <div class="hero-sub">VAT numbers are validated in real-time via the official VIES API of the European Commission.</div>
+    <div class="hero-contact">Questions or issues? Contact <a href="mailto:Chaimae.Elouali@mammoet.com">Chaimae Elouali</a></div>
 </div>
 """, unsafe_allow_html=True)
 
