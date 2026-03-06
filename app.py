@@ -346,10 +346,23 @@ if st.session_state.results is not None:
         f"Invalid ({len(invalid_df)})",
         f"Error ({len(error_df)})"
     ])
-    with t1: st.dataframe(df_res.style.applymap(style_status, subset=["Status"]), use_container_width=True, hide_index=True, height=400)
-    with t2: st.dataframe(valid_df, use_container_width=True, hide_index=True, height=400) if len(valid_df) else st.info("No valid VAT numbers found.")
-    with t3: st.dataframe(invalid_df, use_container_width=True, hide_index=True, height=400) if len(invalid_df) else st.success("No invalid VAT numbers found!")
-    with t4: st.dataframe(error_df, use_container_width=True, hide_index=True, height=400) if len(error_df) else st.success("No errors found.")
+    with t1:
+        st.dataframe(df_res.style.applymap(style_status, subset=["Status"]), use_container_width=True, hide_index=True, height=400)
+    with t2:
+        if len(valid_df) > 0:
+            st.dataframe(valid_df, use_container_width=True, hide_index=True, height=400)
+        else:
+            st.info("No valid VAT numbers found.")
+    with t3:
+        if len(invalid_df) > 0:
+            st.dataframe(invalid_df, use_container_width=True, hide_index=True, height=400)
+        else:
+            st.success("No invalid VAT numbers found!")
+    with t4:
+        if len(error_df) > 0:
+            st.dataframe(error_df, use_container_width=True, hide_index=True, height=400)
+        else:
+            st.success("No errors found.")
 
 st.markdown("---")
 st.markdown("<p style='color:#2a2a2a;font-size:0.75rem;text-align:center;'>Mammoet Data Migration Team · VIES API (European Commission) · SAP ECC → S/4HANA</p>", unsafe_allow_html=True)
