@@ -305,7 +305,48 @@ with col_left:
             if uploaded.name.endswith(".csv"):
                 df_input = pd.read_csv(uploaded, dtype=str)
             elif uploaded.name.endswith(".xml"):
-                df_input = pd.read_excel(uploaded, dtype=str, engine="xlrd")
+                # Excel XML 2003 — parse with lxml
+                import xml.etree.ElementTree as ET
+                content_bytes = uploaded.read()
+                root = ET.fromstring(content_bytes)
+                # Strip namespaces
+                ns = {}
+                for match in __import__('re').finditer(r'\{([^}]+)\}', root.tag):
+                    ns_uri = match.group(1)
+                    if 'Workbook' in ns_uri or 'spreadsheet' in ns_uri.lower() or 'excel' in ns_uri.lower():
+                        ns['ss'] = ns_uri
+                        break
+                if not ns:
+                    # Try to find namespace from first child
+                    all_tags = [elem.tag for elem in root.iter()]
+                    import re as _re
+                    for tag in all_tags:
+                        m = _re.match(r'\{([^}]+)\}', tag)
+                        if m:
+                            ns['ss'] = m.group(1)
+                            break
+                def tag(name):
+                    return f"{{{ns['ss']}}}{name}" if ns else name
+                rows_data = []
+                headers = None
+                for worksheet in root.iter(tag('Worksheet')):
+                    for table in worksheet.iter(tag('Table')):
+                        for i, row in enumerate(table.iter(tag('Row'))):
+                            cells = []
+                            for cell in row.iter(tag('Cell')):
+                                data = cell.find(tag('Data'))
+                                cells.append(data.text if data is not None and data.text else "")
+                            if i == 0:
+                                headers = cells
+                            else:
+                                rows_data.append(cells)
+                    break  # Only first worksheet
+                if headers and rows_data:
+                    # Pad rows to header length
+                    rows_data = [r + [""] * (len(headers) - len(r)) for r in rows_data]
+                    df_input = pd.DataFrame(rows_data, columns=headers).astype(str)
+                else:
+                    raise ValueError("Could not read any data from XML file.")
             else:
                 df_input = pd.read_excel(uploaded, dtype=str)
             vat_col = detect_vat_column(df_input)
