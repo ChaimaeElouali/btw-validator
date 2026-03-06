@@ -40,7 +40,7 @@ st.markdown("""
     .hero-title span { color: #E30613; }
     .hero-sub {
         color: #aaaaaa; font-size: 1rem; margin-top: 0.5rem;
-        font-weight: 400; max-width: 600px; line-height: 1.5;
+        font-weight: 400; white-space: nowrap; line-height: 1.5;
     }
 
     /* ── Section labels ── */
@@ -239,6 +239,33 @@ def to_excel_bytes(df):
         if len(error_df):   error_df.to_excel(writer, sheet_name="Errors", index=False)
     return output.getvalue()
 
+
+def to_xml_bytes(df):
+    """Generate Excel XML 2003 format."""
+    lines = []
+    lines.append('<?xml version="1.0" encoding="UTF-8"?>')
+    lines.append('<?mso-application progid="Excel.Sheet"?>')
+    lines.append('<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"')
+    lines.append(' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">')
+    lines.append('<Worksheet ss:Name="All results">')
+    lines.append('<Table>')
+    # Header row
+    lines.append('<Row>')
+    for col in df.columns:
+        lines.append(f'<Cell><Data ss:Type="String">{col}</Data></Cell>')
+    lines.append('</Row>')
+    # Data rows
+    for _, row in df.iterrows():
+        lines.append('<Row>')
+        for val in row:
+            safe = str(val).replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
+            lines.append(f'<Cell><Data ss:Type="String">{safe}</Data></Cell>')
+        lines.append('</Row>')
+    lines.append('</Table>')
+    lines.append('</Worksheet>')
+    lines.append('</Workbook>')
+    return '\n'.join(lines).encode('utf-8')
+
 def run_validation(df_input, vat_col):
     st.markdown("---")
     st.markdown("**Validating VAT numbers...**")
@@ -277,6 +304,7 @@ def run_validation(df_input, vat_col):
         time.sleep(0.4)
     status_text.empty()
     st.session_state.results = pd.DataFrame(results)
+    st.session_state.scroll_to_results = True
     st.rerun()
 
 # ─── HEADER ─────────────────────────────────
@@ -289,94 +317,64 @@ st.markdown("""
 
 if "results" not in st.session_state:
     st.session_state.results = None
+if "scroll_to_results" not in st.session_state:
+    st.session_state.scroll_to_results = False
 
 # ─── INPUT ──────────────────────────────────
 df_input = None
 vat_col  = "vat_number"
 
-col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
+st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
+st.markdown('<span class="section-hint">CSV, Excel (.xlsx / .xls) or Excel XML 2003 (.xml) — the file must contain a column with VAT numbers</span>', unsafe_allow_html=True)
 
-with col_left:
-    st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
-    st.markdown('<span class="section-hint">CSV, Excel or XML 2003 file containing a column with VAT numbers</span>', unsafe_allow_html=True)
+col_upload, col_spacer = st.columns([4, 6])
+with col_upload:
     uploaded = st.file_uploader("upload", type=["csv","xlsx","xls","xml"], label_visibility="collapsed")
-    if uploaded:
-        try:
-            if uploaded.name.endswith(".csv"):
-                df_input = pd.read_csv(uploaded, dtype=str)
-            elif uploaded.name.endswith(".xml"):
-                # Excel XML 2003 — parse with lxml
-                import xml.etree.ElementTree as ET
-                content_bytes = uploaded.read()
-                root = ET.fromstring(content_bytes)
-                # Strip namespaces
-                ns = {}
-                for match in __import__('re').finditer(r'\{([^}]+)\}', root.tag):
-                    ns_uri = match.group(1)
-                    if 'Workbook' in ns_uri or 'spreadsheet' in ns_uri.lower() or 'excel' in ns_uri.lower():
-                        ns['ss'] = ns_uri
-                        break
-                if not ns:
-                    # Try to find namespace from first child
-                    all_tags = [elem.tag for elem in root.iter()]
-                    import re as _re
-                    for tag in all_tags:
-                        m = _re.match(r'\{([^}]+)\}', tag)
-                        if m:
-                            ns['ss'] = m.group(1)
-                            break
-                def tag(name):
-                    return f"{{{ns['ss']}}}{name}" if ns else name
-                rows_data = []
-                headers = None
-                for worksheet in root.iter(tag('Worksheet')):
-                    for table in worksheet.iter(tag('Table')):
-                        for i, row in enumerate(table.iter(tag('Row'))):
-                            cells = []
-                            for cell in row.iter(tag('Cell')):
-                                data = cell.find(tag('Data'))
-                                cells.append(data.text if data is not None and data.text else "")
-                            if i == 0:
-                                headers = cells
-                            else:
-                                rows_data.append(cells)
-                    break  # Only first worksheet
-                if headers and rows_data:
-                    # Pad rows to header length
-                    rows_data = [r + [""] * (len(headers) - len(r)) for r in rows_data]
-                    df_input = pd.DataFrame(rows_data, columns=headers).astype(str)
-                else:
-                    raise ValueError("Could not read any data from XML file.")
+
+if uploaded:
+    try:
+        if uploaded.name.endswith(".csv"):
+            df_input = pd.read_csv(uploaded, dtype=str)
+        elif uploaded.name.endswith(".xml"):
+            import xml.etree.ElementTree as ET
+            import re as _re
+            content_bytes = uploaded.read()
+            root = ET.fromstring(content_bytes)
+            ns = {}
+            for elem in root.iter():
+                m = _re.match(r'\{([^}]+)\}', elem.tag)
+                if m:
+                    ns['ss'] = m.group(1)
+                    break
+            def tag(name):
+                return f"{{{ns['ss']}}}{name}" if ns else name
+            rows_data = []
+            headers = None
+            for worksheet in root.iter(tag('Worksheet')):
+                for table in worksheet.iter(tag('Table')):
+                    for i, row in enumerate(table.iter(tag('Row'))):
+                        cells = []
+                        for cell in row.iter(tag('Cell')):
+                            data = cell.find(tag('Data'))
+                            cells.append(data.text if data is not None and data.text else "")
+                        if i == 0:
+                            headers = cells
+                        else:
+                            rows_data.append(cells)
+                break
+            if headers and rows_data:
+                rows_data = [r + [""] * (len(headers) - len(r)) for r in rows_data]
+                df_input = pd.DataFrame(rows_data, columns=headers).astype(str)
             else:
-                df_input = pd.read_excel(uploaded, dtype=str)
-            vat_col = detect_vat_column(df_input)
-            df_input = df_input.fillna("")
-            st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"Error reading file: {e}")
-            df_input = None
-
-with col_or:
-    st.markdown("""
-<div class="or-col">
-  <div class="or-line"></div>
-  <div class="or-text">or</div>
-  <div class="or-line"></div>
-</div>
-""", unsafe_allow_html=True)
-
-with col_right:
-    st.markdown('<span class="section-label">Paste VAT numbers</span>', unsafe_allow_html=True)
-    st.markdown('<span class="section-hint">One VAT number per line &nbsp;&mdash;&nbsp; e.g. NL800336808B01, DE811115329</span>', unsafe_allow_html=True)
-    pasted = st.text_area("paste", height=158,
-        placeholder="NL800336808B01\nDE811115329\nBE0999999999",
-        key="paste_input", label_visibility="collapsed")
-    if not uploaded and pasted and pasted.strip():
-        lines = [l.strip() for l in pasted.splitlines() if l.strip()]
-        if lines:
-            df_input = pd.DataFrame({"vat_number": lines})
-            vat_col = "vat_number"
-            st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(lines)} VAT number(s) ready for validation</span>", unsafe_allow_html=True)
+                raise ValueError("Could not read any data from XML file.")
+        else:
+            df_input = pd.read_excel(uploaded, dtype=str)
+        vat_col = detect_vat_column(df_input)
+        df_input = df_input.fillna("")
+        st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error reading file: {e}")
+        df_input = None
 
 # ─── VALIDATE BUTTON ────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
@@ -391,6 +389,14 @@ if df_input is None or len(df_input) == 0:
     st.markdown("<span style='color:#555555; font-size:0.9rem;'>Upload a file or paste VAT numbers to get started.</span>", unsafe_allow_html=True)
 
 # ─── RESULTS ────────────────────────────────
+# Auto-scroll to results
+if st.session_state.get("scroll_to_results"):
+    st.components.v1.html(
+        '<script>setTimeout(function(){window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});}, 300);</script>',
+        height=0
+    )
+    st.session_state.scroll_to_results = False
+
 if st.session_state.results is not None:
     df_res = st.session_state.results
     valid_df   = df_res[df_res["Status"]=="valid"]
@@ -425,13 +431,21 @@ if st.session_state.results is not None:
 </div>
 """, unsafe_allow_html=True)
 
-    col_dl, col_reset, col_spacer = st.columns([3, 1, 6])
-    with col_dl:
+    col_dl_xlsx, col_dl_xml, col_reset, col_spacer = st.columns([3, 3, 1, 3])
+    with col_dl_xlsx:
         st.download_button(
             label="Download report (.xlsx)",
             data=to_excel_bytes(df_res),
             file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
+    with col_dl_xml:
+        st.download_button(
+            label="Download report (.xml)",
+            data=to_xml_bytes(df_res),
+            file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xml",
+            mime="application/xml",
             use_container_width=True
         )
     with col_reset:
