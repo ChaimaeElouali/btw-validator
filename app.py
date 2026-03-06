@@ -12,7 +12,7 @@ import pandas as pd
 import requests
 
 st.set_page_config(
-    page_title="BTW Validator | Mammoet",
+    page_title="VAT Validator | Mammoet",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -46,8 +46,12 @@ st.markdown("""
     /* Section label */
     .section-label {
         font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 2px; color: #E30613; margin-bottom: 0.5rem;
+        letter-spacing: 2px; color: #E30613; margin-bottom: 0.6rem;
         display: block;
+    }
+    .section-hint {
+        font-size: 0.85rem; color: #aaa; margin-bottom: 0.75rem;
+        display: block; font-weight: 400;
     }
 
     /* Or divider */
@@ -56,53 +60,40 @@ st.markdown("""
         align-items: center; justify-content: center;
         height: 100%; padding: 0;
     }
-    .or-line { flex: 1; width: 1px; background: #2a2a2a; min-height: 40px; }
+    .or-line { flex: 1; width: 1px; background: #333; min-height: 40px; }
     .or-text {
-        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
-        color: #444; padding: 8px 0; text-transform: uppercase;
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+        color: #666; padding: 10px 0; text-transform: uppercase;
     }
 
-    /* Upload zone — force dark */
-    [data-testid="stFileUploader"] {
-        background: transparent !important;
-    }
+    /* Upload zone */
+    [data-testid="stFileUploader"] { background: transparent !important; }
     [data-testid="stFileUploader"] > div {
         background: #1a1a1a !important;
         border: 2px dashed #333 !important;
         border-radius: 8px !important;
         transition: border-color 0.2s;
     }
-    [data-testid="stFileUploader"] > div:hover {
-        border-color: #E30613 !important;
-    }
-    [data-testid="stFileUploader"] section {
-        background: #1a1a1a !important;
-        border: none !important;
-    }
+    [data-testid="stFileUploader"] > div:hover { border-color: #E30613 !important; }
+    [data-testid="stFileUploader"] section { background: #1a1a1a !important; border: none !important; }
     [data-testid="stFileUploader"] button {
-        background: #2a2a2a !important;
-        color: #e0e0e0 !important;
-        border: 1px solid #3a3a3a !important;
-        border-radius: 4px !important;
-        font-family: 'Barlow', sans-serif !important;
-        font-weight: 600 !important;
+        background: #2a2a2a !important; color: #e0e0e0 !important;
+        border: 1px solid #444 !important; border-radius: 4px !important;
+        font-family: 'Barlow', sans-serif !important; font-weight: 600 !important;
     }
     [data-testid="stFileUploader"] p { color: #888 !important; font-size: 0.85rem !important; }
-    [data-testid="stFileUploader"] small { color: #555 !important; }
+    [data-testid="stFileUploader"] small { color: #666 !important; }
     [data-testid="stFileUploaderDropzoneInstructions"] { color: #888 !important; }
     [data-testid="stFileUploaderDropzoneInstructions"] div span { color: #888 !important; }
 
     /* Textarea */
     textarea {
-        background: #1a1a1a !important;
-        color: #e0e0e0 !important;
-        border: 2px solid #333 !important;
-        border-radius: 8px !important;
-        font-family: 'Barlow', sans-serif !important;
-        font-size: 0.9rem !important;
+        background: #1a1a1a !important; color: #e0e0e0 !important;
+        border: 2px solid #333 !important; border-radius: 8px !important;
+        font-family: 'Barlow', sans-serif !important; font-size: 0.9rem !important;
     }
     textarea:focus { border-color: #E30613 !important; box-shadow: none !important; }
-    textarea::placeholder { color: #444 !important; }
+    textarea::placeholder { color: #555 !important; }
 
     /* Buttons */
     .stButton > button {
@@ -168,7 +159,7 @@ def parse_vat(raw):
 def check_vat(country_code, vat_number):
     if country_code not in EU_COUNTRY_CODES:
         return {"status":"error","company_name":"—","company_address":"—",
-                "message":f"Landcode '{country_code}' niet ondersteund"}
+                "message":f"Country code '{country_code}' not supported by VIES"}
     url = VIES_URL.format(country_code=country_code, vat_number=vat_number)
     for attempt in range(1, MAX_RETRIES+1):
         try:
@@ -179,9 +170,9 @@ def check_vat(country_code, vat_number):
                 return {"status":"valid" if valid else "invalid",
                         "company_name": data.get("name") or "—",
                         "company_address": data.get("address") or "—",
-                        "message":"Geldig" if valid else "Ongeldig volgens VIES"}
+                        "message":"Valid" if valid else "Invalid according to VIES"}
             elif r.status_code == 404:
-                return {"status":"invalid","company_name":"—","company_address":"—","message":"Niet gevonden"}
+                return {"status":"invalid","company_name":"—","company_address":"—","message":"Not found in VIES"}
             elif r.status_code in (429,503,504):
                 time.sleep(2**attempt); continue
             else:
@@ -191,7 +182,7 @@ def check_vat(country_code, vat_number):
             return {"status":"error","company_name":"—","company_address":"—","message":"Timeout"}
         except Exception as e:
             return {"status":"error","company_name":"—","company_address":"—","message":str(e)}
-    return {"status":"error","company_name":"—","company_address":"—","message":"VIES niet beschikbaar"}
+    return {"status":"error","company_name":"—","company_address":"—","message":"VIES unavailable"}
 
 def detect_vat_column(df):
     for col in df.columns:
@@ -205,25 +196,25 @@ def to_excel_bytes(df):
     error_df   = df[~df["Status"].isin(["valid","invalid"])]
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         pd.DataFrame({
-            "Categorie":["Geldig","Ongeldig","Fout/Onbekend","Totaal"],
-            "Aantal":[len(valid_df),len(invalid_df),len(error_df),len(df)],
+            "Category":["Valid","Invalid","Error/Unknown","Total"],
+            "Count":[len(valid_df),len(invalid_df),len(error_df),len(df)],
             "Percentage":[
                 f"{len(valid_df)/len(df)*100:.1f}%" if len(df) else "0%",
                 f"{len(invalid_df)/len(df)*100:.1f}%" if len(df) else "0%",
                 f"{len(error_df)/len(df)*100:.1f}%" if len(df) else "0%","100%"]
-        }).to_excel(writer, sheet_name="Samenvatting", index=False)
-        ws = writer.sheets["Samenvatting"]
-        ws.cell(row=7,column=1,value=f"Rapport: {datetime.now().strftime('%d-%m-%Y %H:%M')}")
-        ws.cell(row=8,column=1,value="Bron: VIES API — European Commission")
-        df.to_excel(writer, sheet_name="Alle resultaten", index=False)
-        if len(valid_df):   valid_df.to_excel(writer, sheet_name="Geldig", index=False)
-        if len(invalid_df): invalid_df.to_excel(writer, sheet_name="Ongeldig", index=False)
-        if len(error_df):   error_df.to_excel(writer, sheet_name="Fouten", index=False)
+        }).to_excel(writer, sheet_name="Summary", index=False)
+        ws = writer.sheets["Summary"]
+        ws.cell(row=7,column=1,value=f"Report generated: {datetime.now().strftime('%d-%m-%Y %H:%M')}")
+        ws.cell(row=8,column=1,value="Source: VIES API — European Commission")
+        df.to_excel(writer, sheet_name="All results", index=False)
+        if len(valid_df):   valid_df.to_excel(writer, sheet_name="Valid", index=False)
+        if len(invalid_df): invalid_df.to_excel(writer, sheet_name="Invalid", index=False)
+        if len(error_df):   error_df.to_excel(writer, sheet_name="Errors", index=False)
     return output.getvalue()
 
 def run_validation(df_input, vat_col):
     st.markdown("---")
-    st.markdown("**Validatie bezig...**")
+    st.markdown("**Validating...**")
     progress_bar = st.progress(0)
     status_text  = st.empty()
     results = []
@@ -234,13 +225,13 @@ def run_validation(df_input, vat_col):
         status_text.markdown(
             f"<small style='color:#666'>{i+1}/{total} — <code style='color:#999'>{raw}</code></small>",
             unsafe_allow_html=True)
-        result = {"status":"invalid","company_name":"—","company_address":"—","message":"Ongeldig formaat"} \
+        result = {"status":"invalid","company_name":"—","company_address":"—","message":"Invalid format"} \
             if not country_code or not vat_number else check_vat(country_code, vat_number)
-        row_data = {"VAT Input": raw, "Land": country_code, "BTW Nummer": vat_number}
+        row_data = {"VAT Input": raw, "Country": country_code, "VAT Number": vat_number}
         for c in df_input.columns:
             if c != vat_col: row_data[c] = row[c]
-        row_data.update({"Status":result["status"],"Bedrijfsnaam (VIES)":result["company_name"],
-                         "Adres (VIES)":result["company_address"],"Melding":result["message"]})
+        row_data.update({"Status":result["status"],"Company (VIES)":result["company_name"],
+                         "Address (VIES)":result["company_address"],"Message":result["message"]})
         results.append(row_data)
         progress_bar.progress((i+1)/total)
         time.sleep(0.4)
@@ -251,7 +242,7 @@ def run_validation(df_input, vat_col):
 # ─── HEADER ─────────────────────────────────
 st.markdown("""
 <div class="hero">
-    <div class="hero-title">BTW <span>VALIDATOR</span></div>
+    <div class="hero-title">VAT <span>VALIDATOR</span></div>
     <div class="hero-sub">Mammoet Data Migration &nbsp;·&nbsp; SAP ECC → S/4HANA &nbsp;·&nbsp; VIES API</div>
 </div>
 """, unsafe_allow_html=True)
@@ -266,29 +257,31 @@ vat_col  = "vat_number"
 col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
 
 with col_left:
-    st.markdown('<span class="section-label">📁 Bestand uploaden — CSV of Excel</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-label">📁 Upload a file</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-hint">CSV or Excel file with a column containing VAT numbers</span>', unsafe_allow_html=True)
     uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
     if uploaded:
         try:
             df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
             vat_col = detect_vat_column(df_input)
             df_input = df_input.fillna("")
-            st.markdown(f"<small style='color:#888'>✅ {len(df_input)} rijen geladen · kolom: <code style='color:#aaa'>{vat_col}</code></small>", unsafe_allow_html=True)
+            st.markdown(f"<small style='color:#aaa'>✅ {len(df_input)} rows loaded · column: <code style='color:#ccc'>{vat_col}</code></small>", unsafe_allow_html=True)
         except Exception as e:
-            st.error(f"Fout: {e}")
+            st.error(f"Error reading file: {e}")
             df_input = None
 
 with col_or:
     st.markdown("""
 <div class="or-col">
   <div class="or-line"></div>
-  <div class="or-text">of</div>
+  <div class="or-text">or</div>
   <div class="or-line"></div>
 </div>
 """, unsafe_allow_html=True)
 
 with col_right:
-    st.markdown('<span class="section-label">📋 BTW-nummers plakken — één per regel</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-label">📋 Paste VAT numbers</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-hint">One VAT number per line — e.g. NL800336808B01, DE811115329</span>', unsafe_allow_html=True)
     pasted = st.text_area("paste", height=158,
         placeholder="NL800336808B01\nDE811115329\nBE0999999999\n...",
         key="paste_input", label_visibility="collapsed")
@@ -297,19 +290,19 @@ with col_right:
         if lines:
             df_input = pd.DataFrame({"vat_number": lines})
             vat_col = "vat_number"
-            st.markdown(f"<small style='color:#888'>✅ {len(lines)} BTW-nummer(s) geladen</small>", unsafe_allow_html=True)
+            st.markdown(f"<small style='color:#aaa'>✅ {len(lines)} VAT number(s) loaded</small>", unsafe_allow_html=True)
 
-# ─── VALIDEER KNOP ──────────────────────────
+# ─── VALIDATE BUTTON ────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
 if df_input is not None and len(df_input) > 0:
     col_btn, _ = st.columns([2, 5])
     with col_btn:
-        if st.button(f"Valideer {len(df_input)} nummers →", use_container_width=True):
+        if st.button(f"Validate {len(df_input)} VAT numbers →", use_container_width=True):
             run_validation(df_input, vat_col)
 else:
-    st.markdown("<small style='color:#444'>Upload een bestand of plak BTW-nummers om te beginnen.</small>", unsafe_allow_html=True)
+    st.markdown("<small style='color:#555'>Upload a file or paste VAT numbers to get started.</small>", unsafe_allow_html=True)
 
-# ─── RESULTATEN ─────────────────────────────
+# ─── RESULTS ────────────────────────────────
 if st.session_state.results is not None:
     df_res = st.session_state.results
     valid_df   = df_res[df_res["Status"]=="valid"]
@@ -321,24 +314,24 @@ if st.session_state.results is not None:
 
     st.markdown(f"""
 <div class="stat-row">
-  <div class="stat-card total"><div class="stat-num">{total}</div><div class="stat-lbl">Totaal</div></div>
-  <div class="stat-card valid"><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Geldig</div></div>
-  <div class="stat-card invalid"><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Ongeldig</div></div>
-  <div class="stat-card error"><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Fout</div></div>
+  <div class="stat-card total"><div class="stat-num">{total}</div><div class="stat-lbl">Total</div></div>
+  <div class="stat-card valid"><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Valid</div></div>
+  <div class="stat-card invalid"><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Invalid</div></div>
+  <div class="stat-card error"><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Error</div></div>
 </div>
 """, unsafe_allow_html=True)
 
     col_dl, col_reset, _ = st.columns([3, 1, 4])
     with col_dl:
         st.download_button(
-            label="📥 Download rapport (.xlsx)",
+            label="📥 Download report (.xlsx)",
             data=to_excel_bytes(df_res),
-            file_name=f"btw_validatie_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True
         )
     with col_reset:
-        if st.button("Opnieuw", use_container_width=True):
+        if st.button("Reset", use_container_width=True):
             st.session_state.results = None
             st.rerun()
 
@@ -348,15 +341,15 @@ if st.session_state.results is not None:
         return {"valid":"color:#22c55e;font-weight:700","invalid":"color:#E30613;font-weight:700"}.get(val,"color:#f59e0b;font-weight:700")
 
     t1, t2, t3, t4 = st.tabs([
-        f"Alle resultaten ({total})",
-        f"Geldig ({len(valid_df)})",
-        f"Ongeldig ({len(invalid_df)})",
-        f"Fout ({len(error_df)})"
+        f"All results ({total})",
+        f"Valid ({len(valid_df)})",
+        f"Invalid ({len(invalid_df)})",
+        f"Error ({len(error_df)})"
     ])
     with t1: st.dataframe(df_res.style.applymap(style_status, subset=["Status"]), use_container_width=True, hide_index=True, height=400)
-    with t2: st.dataframe(valid_df, use_container_width=True, hide_index=True, height=400) if len(valid_df) else st.info("Geen geldige BTW-nummers.")
-    with t3: st.dataframe(invalid_df, use_container_width=True, hide_index=True, height=400) if len(invalid_df) else st.success("Geen ongeldige BTW-nummers!")
-    with t4: st.dataframe(error_df, use_container_width=True, hide_index=True, height=400) if len(error_df) else st.success("Geen fouten.")
+    with t2: st.dataframe(valid_df, use_container_width=True, hide_index=True, height=400) if len(valid_df) else st.info("No valid VAT numbers found.")
+    with t3: st.dataframe(invalid_df, use_container_width=True, hide_index=True, height=400) if len(invalid_df) else st.success("No invalid VAT numbers found!")
+    with t4: st.dataframe(error_df, use_container_width=True, hide_index=True, height=400) if len(error_df) else st.success("No errors found.")
 
 st.markdown("---")
 st.markdown("<p style='color:#2a2a2a;font-size:0.75rem;text-align:center;'>Mammoet Data Migration Team · VIES API (European Commission) · SAP ECC → S/4HANA</p>", unsafe_allow_html=True)
