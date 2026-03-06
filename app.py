@@ -27,7 +27,7 @@ st.markdown("""
     /* Remove white card/border around page */
     .stApp > div { background: transparent !important; }
     .block-container {
-        padding: 1.5rem 2.5rem !important;
+        padding: 0 2.5rem 1.5rem 2.5rem !important;
         max-width: 100% !important;
     }
 
@@ -93,8 +93,8 @@ st.markdown("""
     .stButton > button {
         background: #E30613 !important; color: #ffffff !important;
         border: none !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important; font-size: 1rem !important;
-        padding: 0.65rem 1.5rem !important; border-radius: 5px !important;
+        font-weight: 700 !important; font-size: 0.9rem !important;
+        padding: 0.5rem 1.2rem !important; border-radius: 5px !important;
         white-space: nowrap !important;
     }
     .stButton > button:hover { background: #c0050f !important; }
@@ -106,7 +106,7 @@ st.markdown("""
         border: 1px solid #aaaaaa !important;
         font-family: 'Barlow', sans-serif !important;
         font-weight: 600 !important; border-radius: 5px !important;
-        font-size: 0.8rem !important; padding: 0.35rem 0.8rem !important;
+        font-size: 0.75rem !important; padding: 0.3rem 0.7rem !important;
     }
     .stDownloadButton > button:hover {
         background: #222222 !important; color: #ffffff !important;
@@ -160,6 +160,9 @@ st.markdown("""
 
     hr { border-color: #dddddd !important; }
     #MainMenu, footer, header { visibility: hidden; }
+    .stAppHeader, [data-testid="stHeader"] { display: none !important; }
+    .stMainBlockContainer { padding-top: 0 !important; }
+    .appview-container .main .block-container { padding-top: 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -440,5 +443,3 @@ with col_right:
 """, unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<p style='background:#0f0f0f; color:#444444; font-size:0.8rem; text-align:center; padding:1rem; margin:0;'>Mammoet Data Migration Team &nbsp;&middot;&nbsp; VIES API (European Commission) &nbsp;&middot;&nbsp; SAP ECC &rarr; S/4HANA</p>", unsafe_allow_html=True)
