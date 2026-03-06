@@ -23,10 +23,10 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 
     html, body, [class*="css"] { font-family: 'Barlow', sans-serif; }
-    .stApp { background-color: #0f0f0f; color: #f0f0f0; }
-    .block-container { padding-top: 0 !important; max-width: 900px; margin: 0 auto; }
+    .stApp { background-color: #0f0f0f; color: #e0e0e0; }
+    .block-container { padding-top: 0 !important; max-width: 860px; margin: 0 auto; }
 
-    /* ── Hero ── */
+    /* Hero */
     .hero {
         border-bottom: 3px solid #E30613;
         padding: 2.2rem 0 1.6rem;
@@ -39,132 +39,103 @@ st.markdown("""
     }
     .hero-title span { color: #E30613; }
     .hero-sub {
-        color: #555; font-size: 0.78rem; margin-top: 0.5rem;
+        color: #666; font-size: 0.78rem; margin-top: 0.5rem;
         font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
     }
 
-    /* ── Input cards ── */
-    .input-grid {
-        display: grid;
-        grid-template-columns: 1fr 40px 1fr;
-        gap: 0;
-        align-items: stretch;
-        margin-bottom: 1.5rem;
-    }
-    .input-card {
-        background: #1a1a1a;
-        border: 1px solid #2a2a2a;
-        border-radius: 10px;
-        padding: 1.75rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .input-card:hover { border-color: #3a3a3a; }
-    .card-label {
-        font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 2px; color: #E30613; margin-bottom: 0.25rem;
-    }
-    .card-desc { font-size: 0.85rem; color: #666; margin: 0; }
-    .or-col {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 1rem 0;
-    }
-    .or-line { flex: 1; width: 1px; background: #2a2a2a; }
-    .or-text {
-        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
-        text-transform: uppercase; color: #3a3a3a;
-        padding: 4px 0;
+    /* Section label */
+    .section-label {
+        font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 2px; color: #E30613; margin-bottom: 0.5rem;
+        display: block;
     }
 
-    /* ── File uploader override ── */
+    /* Or divider */
+    .or-col {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        height: 100%; padding: 0;
+    }
+    .or-line { flex: 1; width: 1px; background: #2a2a2a; min-height: 40px; }
+    .or-text {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+        color: #444; padding: 8px 0; text-transform: uppercase;
+    }
+
+    /* Upload zone — force dark */
     [data-testid="stFileUploader"] {
-        background: #111 !important;
+        background: transparent !important;
     }
     [data-testid="stFileUploader"] > div {
-        background: #111 !important;
-        border: 2px dashed #2a2a2a !important;
+        background: #1a1a1a !important;
+        border: 2px dashed #333 !important;
         border-radius: 8px !important;
-        padding: 1.5rem !important;
         transition: border-color 0.2s;
     }
     [data-testid="stFileUploader"] > div:hover {
         border-color: #E30613 !important;
     }
+    [data-testid="stFileUploader"] section {
+        background: #1a1a1a !important;
+        border: none !important;
+    }
     [data-testid="stFileUploader"] button {
         background: #2a2a2a !important;
-        color: #f0f0f0 !important;
-        border: none !important;
+        color: #e0e0e0 !important;
+        border: 1px solid #3a3a3a !important;
         border-radius: 4px !important;
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 600 !important;
     }
-    [data-testid="stFileUploader"] p,
+    [data-testid="stFileUploader"] p { color: #888 !important; font-size: 0.85rem !important; }
     [data-testid="stFileUploader"] small { color: #555 !important; }
+    [data-testid="stFileUploaderDropzoneInstructions"] { color: #888 !important; }
+    [data-testid="stFileUploaderDropzoneInstructions"] div span { color: #888 !important; }
 
-    /* ── Textarea ── */
+    /* Textarea */
     textarea {
-        background: #111 !important;
-        color: #f0f0f0 !important;
-        border: 2px solid #2a2a2a !important;
+        background: #1a1a1a !important;
+        color: #e0e0e0 !important;
+        border: 2px solid #333 !important;
         border-radius: 8px !important;
         font-family: 'Barlow', sans-serif !important;
         font-size: 0.9rem !important;
-        transition: border-color 0.2s;
     }
     textarea:focus { border-color: #E30613 !important; box-shadow: none !important; }
     textarea::placeholder { color: #444 !important; }
 
-    /* ── Validate button ── */
+    /* Buttons */
     .stButton > button {
-        background: #E30613 !important;
-        color: white !important;
-        border: none !important;
-        font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        padding: 0.75rem 2.5rem !important;
-        border-radius: 6px !important;
-        letter-spacing: 0.5px;
-        transition: background 0.2s !important;
+        background: #E30613 !important; color: #fff !important;
+        border: none !important; font-family: 'Barlow', sans-serif !important;
+        font-weight: 700 !important; font-size: 1rem !important;
+        padding: 0.7rem 2rem !important; border-radius: 6px !important;
     }
     .stButton > button:hover { background: #c0050f !important; }
-
     .stDownloadButton > button {
-        background: #1a1a1a !important;
-        color: #f0f0f0 !important;
-        border: 1px solid #333 !important;
-        font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important;
-        border-radius: 6px !important;
+        background: #1a1a1a !important; color: #e0e0e0 !important;
+        border: 1px solid #333 !important; font-family: 'Barlow', sans-serif !important;
+        font-weight: 700 !important; border-radius: 6px !important;
     }
 
-    /* ── Stat cards ── */
+    /* Stat cards */
     .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
-    .stat-card {
-        background: #1a1a1a; border-radius: 8px; padding: 1.25rem 1rem;
-        text-align: center; border: 1px solid #2a2a2a;
-    }
+    .stat-card { background: #1a1a1a; border-radius: 8px; padding: 1.25rem 1rem; text-align: center; border: 1px solid #2a2a2a; }
     .stat-card.total   { border-top: 3px solid #555; }
     .stat-card.valid   { border-top: 3px solid #22c55e; }
     .stat-card.invalid { border-top: 3px solid #E30613; }
     .stat-card.error   { border-top: 3px solid #f59e0b; }
-    .stat-num {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 2.5rem; font-weight: 800; line-height: 1;
-    }
-    .stat-lbl { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-top: 4px; }
+    .stat-num { font-family: 'Barlow Condensed', sans-serif; font-size: 2.5rem; font-weight: 800; line-height: 1; }
+    .stat-lbl { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-top: 4px; }
     .total   .stat-num { color: #888; }
     .valid   .stat-num { color: #22c55e; }
     .invalid .stat-num { color: #E30613; }
     .error   .stat-num { color: #f59e0b; }
 
-    /* ── Tabs ── */
+    /* Tabs */
     .stTabs [data-baseweb="tab-list"] { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
     .stTabs [data-baseweb="tab"] {
-        color: #555 !important; font-family: 'Barlow', sans-serif !important;
+        color: #666 !important; font-family: 'Barlow', sans-serif !important;
         font-weight: 600 !important; padding: 0.7rem 1.5rem !important;
     }
     .stTabs [aria-selected="true"] {
@@ -261,7 +232,7 @@ def run_validation(df_input, vat_col):
         raw = str(row[vat_col]).strip()
         country_code, vat_number = parse_vat(raw)
         status_text.markdown(
-            f"<small style='color:#555'>{i+1}/{total} — <code style='color:#888'>{raw}</code></small>",
+            f"<small style='color:#666'>{i+1}/{total} — <code style='color:#999'>{raw}</code></small>",
             unsafe_allow_html=True)
         result = {"status":"invalid","company_name":"—","company_address":"—","message":"Ongeldig formaat"} \
             if not country_code or not vat_number else check_vat(country_code, vat_number)
@@ -288,26 +259,21 @@ st.markdown("""
 if "results" not in st.session_state:
     st.session_state.results = None
 
-# ─── INPUT: twee kaarten naast elkaar ───────
-col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
-
+# ─── INPUT ──────────────────────────────────
 df_input = None
 vat_col  = "vat_number"
 
+col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
+
 with col_left:
-    st.markdown("""
-<div class="input-card">
-  <div class="card-label">📁 Bestand uploaden</div>
-  <p class="card-desc">CSV of Excel met een kolom BTW-nummers</p>
-</div>
-""", unsafe_allow_html=True)
+    st.markdown('<span class="section-label">📁 Bestand uploaden — CSV of Excel</span>', unsafe_allow_html=True)
     uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
     if uploaded:
         try:
             df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
             vat_col = detect_vat_column(df_input)
             df_input = df_input.fillna("")
-            st.markdown(f"<small style='color:#555'>✅ {len(df_input)} rijen · kolom: <code style='color:#888'>{vat_col}</code></small>", unsafe_allow_html=True)
+            st.markdown(f"<small style='color:#888'>✅ {len(df_input)} rijen geladen · kolom: <code style='color:#aaa'>{vat_col}</code></small>", unsafe_allow_html=True)
         except Exception as e:
             st.error(f"Fout: {e}")
             df_input = None
@@ -322,13 +288,8 @@ with col_or:
 """, unsafe_allow_html=True)
 
 with col_right:
-    st.markdown("""
-<div class="input-card">
-  <div class="card-label">📋 BTW-nummers plakken</div>
-  <p class="card-desc">Plak nummers uit SAP of Excel, één per regel</p>
-</div>
-""", unsafe_allow_html=True)
-    pasted = st.text_area("paste", height=150,
+    st.markdown('<span class="section-label">📋 BTW-nummers plakken — één per regel</span>', unsafe_allow_html=True)
+    pasted = st.text_area("paste", height=158,
         placeholder="NL800336808B01\nDE811115329\nBE0999999999\n...",
         key="paste_input", label_visibility="collapsed")
     if not uploaded and pasted and pasted.strip():
@@ -336,17 +297,17 @@ with col_right:
         if lines:
             df_input = pd.DataFrame({"vat_number": lines})
             vat_col = "vat_number"
-            st.markdown(f"<small style='color:#555'>✅ {len(lines)} BTW-nummer(s)</small>", unsafe_allow_html=True)
+            st.markdown(f"<small style='color:#888'>✅ {len(lines)} BTW-nummer(s) geladen</small>", unsafe_allow_html=True)
 
 # ─── VALIDEER KNOP ──────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
 if df_input is not None and len(df_input) > 0:
-    col_btn, col_empty = st.columns([1, 3])
+    col_btn, _ = st.columns([2, 5])
     with col_btn:
         if st.button(f"Valideer {len(df_input)} nummers →", use_container_width=True):
             run_validation(df_input, vat_col)
 else:
-    st.markdown("<small style='color:#333'>Upload een bestand of plak BTW-nummers om te beginnen.</small>", unsafe_allow_html=True)
+    st.markdown("<small style='color:#444'>Upload een bestand of plak BTW-nummers om te beginnen.</small>", unsafe_allow_html=True)
 
 # ─── RESULTATEN ─────────────────────────────
 if st.session_state.results is not None:
@@ -367,7 +328,7 @@ if st.session_state.results is not None:
 </div>
 """, unsafe_allow_html=True)
 
-    col_dl, col_reset, col_empty = st.columns([3, 1, 4])
+    col_dl, col_reset, _ = st.columns([3, 1, 4])
     with col_dl:
         st.download_button(
             label="📥 Download rapport (.xlsx)",
