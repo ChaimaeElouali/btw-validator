@@ -23,50 +23,50 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 
     html, body, [class*="css"] { font-family: 'Barlow', sans-serif; }
-    .stApp { background-color: #0f0f0f; color: #e0e0e0; }
-    .block-container { padding: 0 3rem !important; max-width: 100% !important; }
+    .stApp { background-color: #0f0f0f; color: #d0d0d0; }
+    .block-container { padding: 0 2.5rem !important; max-width: 100% !important; }
 
-    /* Hero */
+    /* ── Hero ── */
     .hero {
         border-bottom: 3px solid #E30613;
-        padding: 2.2rem 0 1.6rem;
-        margin-bottom: 2.5rem;
+        padding: 2rem 0 1.5rem;
+        margin-bottom: 2rem;
     }
     .hero-title {
         font-family: 'Barlow Condensed', sans-serif;
-        font-size: 2.8rem; font-weight: 800; color: #fff;
+        font-size: 2.6rem; font-weight: 800; color: #ffffff;
         letter-spacing: -1px; margin: 0; line-height: 1;
     }
     .hero-title span { color: #E30613; }
     .hero-sub {
-        color: #888; font-size: 0.85rem; margin-top: 0.6rem;
-        font-weight: 400; letter-spacing: 0px;
+        color: #aaaaaa; font-size: 1rem; margin-top: 0.5rem;
+        font-weight: 400; max-width: 600px; line-height: 1.5;
     }
 
-    /* Section label */
+    /* ── Section labels ── */
     .section-label {
-        font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 2px; color: #E30613; margin-bottom: 0.4rem;
-        display: block;
+        font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 1.5px; color: #E30613;
+        margin-bottom: 0.4rem; display: block;
     }
     .section-hint {
-        font-size: 0.85rem; color: #999; margin-bottom: 0.75rem;
-        display: block; font-weight: 400;
+        font-size: 0.9rem; color: #aaaaaa; margin-bottom: 0.75rem;
+        display: block; font-weight: 400; line-height: 1.4;
     }
 
-    /* Or divider */
+    /* ── Or divider ── */
     .or-col {
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        height: 220px;
+        height: 200px;
     }
     .or-line { flex: 1; width: 1px; background: #2a2a2a; }
     .or-text {
-        font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
-        color: #555; padding: 10px 0; text-transform: uppercase;
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+        color: #555555; padding: 10px 0; text-transform: uppercase;
     }
 
-    /* Upload zone — force dark */
+    /* ── Upload zone ── */
     [data-testid="stFileUploader"] { background: transparent !important; }
     [data-testid="stFileUploader"] > div {
         background: #1a1a1a !important;
@@ -77,93 +77,90 @@ st.markdown("""
     [data-testid="stFileUploader"] > div:hover { border-color: #E30613 !important; }
     [data-testid="stFileUploader"] section { background: #1a1a1a !important; border: none !important; }
     [data-testid="stFileUploader"] button {
-        background: #2a2a2a !important; color: #e0e0e0 !important;
+        background: #2a2a2a !important; color: #d0d0d0 !important;
         border: 1px solid #3a3a3a !important; border-radius: 4px !important;
         font-family: 'Barlow', sans-serif !important; font-weight: 600 !important;
+        font-size: 0.9rem !important;
     }
-    [data-testid="stFileUploader"] p { color: #777 !important; font-size: 0.85rem !important; }
-    [data-testid="stFileUploader"] small { color: #555 !important; }
-    [data-testid="stFileUploaderDropzoneInstructions"] { color: #777 !important; }
-    [data-testid="stFileUploaderDropzoneInstructions"] div span { color: #777 !important; }
+    [data-testid="stFileUploader"] p { color: #888888 !important; font-size: 0.9rem !important; }
+    [data-testid="stFileUploader"] small { color: #666666 !important; font-size: 0.85rem !important; }
+    [data-testid="stFileUploaderDropzoneInstructions"] div span { color: #888888 !important; font-size: 0.9rem !important; }
 
-    /* Textarea */
+    /* ── Textarea ── */
     textarea {
-        background: #1a1a1a !important; color: #e0e0e0 !important;
+        background: #1a1a1a !important; color: #d0d0d0 !important;
         border: 1px solid #2a2a2a !important; border-radius: 8px !important;
-        font-family: 'Barlow', sans-serif !important; font-size: 0.9rem !important;
+        font-family: 'Barlow', sans-serif !important; font-size: 0.95rem !important;
+        line-height: 1.6 !important;
     }
     textarea:focus { border-color: #E30613 !important; box-shadow: none !important; }
-    textarea::placeholder { color: #444 !important; }
+    textarea::placeholder { color: #444444 !important; }
 
-    /* Validate button */
+    /* ── Validate button ── */
     .stButton > button {
-        background: #E30613 !important; color: #fff !important;
+        background: #E30613 !important; color: #ffffff !important;
         border: none !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important; font-size: 0.95rem !important;
-        padding: 0.65rem 2rem !important; border-radius: 5px !important;
-        white-space: nowrap !important;
+        font-weight: 700 !important; font-size: 1rem !important;
+        padding: 0.7rem 2rem !important; border-radius: 5px !important;
+        white-space: nowrap !important; letter-spacing: 0.3px;
     }
     .stButton > button:hover { background: #c0050f !important; }
 
-    /* Reset button — subtle */
-    .reset-btn .stButton > button {
-        background: transparent !important; color: #666 !important;
-        border: 1px solid #2a2a2a !important;
-        font-size: 0.85rem !important; padding: 0.5rem 1rem !important;
-        font-weight: 500 !important;
-    }
-    .reset-btn .stButton > button:hover { color: #aaa !important; border-color: #444 !important; }
-
-    /* Download button */
+    /* ── Download button ── */
     .stDownloadButton > button {
-        background: #1a1a1a !important; color: #e0e0e0 !important;
-        border: 1px solid #2a2a2a !important; font-family: 'Barlow', sans-serif !important;
+        background: #1a1a1a !important; color: #d0d0d0 !important;
+        border: 1px solid #333333 !important;
+        font-family: 'Barlow', sans-serif !important;
         font-weight: 600 !important; border-radius: 5px !important;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important; padding: 0.6rem 1.5rem !important;
     }
-    .stDownloadButton > button:hover { border-color: #444 !important; }
+    .stDownloadButton > button:hover { border-color: #555555 !important; color: #ffffff !important; }
 
-    /* Stat cards */
+    /* ── Stat cards ── */
     .stat-row {
-        display: grid; grid-template-columns: repeat(4,1fr);
-        gap: 10px; margin-bottom: 1.5rem;
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 12px; margin-bottom: 1.5rem;
     }
     .stat-card {
-        background: #1a1a1a; border-radius: 6px; padding: 1rem;
-        text-align: center; border: 1px solid #222;
+        background: #1a1a1a; border-radius: 6px;
+        padding: 1.2rem 1rem; text-align: center;
+        border: 1px solid #222222;
     }
-    .stat-card.total   { border-top: 2px solid #444; }
-    .stat-card.valid   { border-top: 2px solid #22c55e; }
-    .stat-card.invalid { border-top: 2px solid #E30613; }
-    .stat-card.error   { border-top: 2px solid #f59e0b; }
+    .stat-card.total   { border-top: 3px solid #555555; }
+    .stat-card.valid   { border-top: 3px solid #4a9d6f; }
+    .stat-card.invalid { border-top: 3px solid #E30613; }
+    .stat-card.error   { border-top: 3px solid #c97d20; }
     .stat-num {
         font-family: 'Barlow Condensed', sans-serif;
-        font-size: 2rem; font-weight: 800; line-height: 1;
+        font-size: 2.2rem; font-weight: 800; line-height: 1;
     }
     .stat-lbl {
-        font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
-        letter-spacing: 1.5px; color: #555; margin-top: 4px;
+        font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 1.5px; color: #666666; margin-top: 6px;
     }
-    .total   .stat-num { color: #777; }
-    .valid   .stat-num { color: #22c55e; }
+    .stat-icon { font-size: 0.9rem; margin-bottom: 4px; color: #555555; }
+    .total   .stat-num { color: #888888; }
+    .valid   .stat-num { color: #4a9d6f; }
     .invalid .stat-num { color: #E30613; }
-    .error   .stat-num { color: #f59e0b; }
+    .error   .stat-num { color: #c97d20; }
 
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
+    /* ── Tabs ── */
+    .stTabs [data-baseweb="tab-list"] {
+        background: #1a1a1a; border-bottom: 1px solid #2a2a2a;
+    }
     .stTabs [data-baseweb="tab"] {
-        color: #555 !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 600 !important; padding: 0.65rem 1.25rem !important;
-        font-size: 0.85rem !important;
+        color: #666666 !important; font-family: 'Barlow', sans-serif !important;
+        font-weight: 600 !important; padding: 0.7rem 1.5rem !important;
+        font-size: 0.9rem !important;
     }
     .stTabs [aria-selected="true"] {
-        color: #fff !important; border-bottom: 2px solid #E30613 !important;
+        color: #ffffff !important;
+        border-bottom: 2px solid #E30613 !important;
         background: transparent !important;
     }
 
-    /* Success/info messages */
-    code { background: #1a1a1a !important; color: #ccc !important; border: none !important; }
-
+    /* ── Misc ── */
+    code { background: transparent !important; color: #aaaaaa !important; border: none !important; font-size: 0.85rem !important; }
     .stProgress > div > div { background-color: #E30613 !important; }
     hr { border-color: #1e1e1e !important; }
     #MainMenu, footer, header { visibility: hidden; }
@@ -226,7 +223,7 @@ def to_excel_bytes(df):
     error_df   = df[~df["Status"].isin(["valid","invalid"])]
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         pd.DataFrame({
-            "Category":["Valid","Invalid","Error/Unknown","Total"],
+            "Category":["Valid","Invalid","Error / Unknown","Total"],
             "Count":[len(valid_df),len(invalid_df),len(error_df),len(df)],
             "Percentage":[
                 f"{len(valid_df)/len(df)*100:.1f}%" if len(df) else "0%",
@@ -244,7 +241,7 @@ def to_excel_bytes(df):
 
 def run_validation(df_input, vat_col):
     st.markdown("---")
-    st.markdown("**Validating...**")
+    st.markdown("**Validating VAT numbers...**")
     progress_bar = st.progress(0)
     status_text  = st.empty()
     results = []
@@ -253,15 +250,28 @@ def run_validation(df_input, vat_col):
         raw = str(row[vat_col]).strip()
         country_code, vat_number = parse_vat(raw)
         status_text.markdown(
-            f"<small style='color:#555'>{i+1} / {total} &nbsp;—&nbsp; {raw}</small>",
+            f"<span style='color:#777; font-size:0.9rem;'>Processing {i+1} of {total}: {raw}</span>",
             unsafe_allow_html=True)
         result = {"status":"invalid","company_name":"—","company_address":"—","message":"Invalid format"} \
             if not country_code or not vat_number else check_vat(country_code, vat_number)
+
+        # Status label with accessibility symbol
+        status_label = {
+            "valid":   "✓ valid",
+            "invalid": "✗ invalid",
+            "error":   "! error"
+        }.get(result["status"], "! error")
+
         row_data = {"VAT Input": raw, "Country": country_code, "VAT Number": vat_number}
         for c in df_input.columns:
             if c != vat_col: row_data[c] = row[c]
-        row_data.update({"Status":result["status"],"Company (VIES)":result["company_name"],
-                         "Address (VIES)":result["company_address"],"Message":result["message"]})
+        row_data.update({
+            "Status":        result["status"],
+            "Status Label":  status_label,
+            "Company (VIES)":result["company_name"],
+            "Address (VIES)":result["company_address"],
+            "Message":       result["message"]
+        })
         results.append(row_data)
         progress_bar.progress((i+1)/total)
         time.sleep(0.4)
@@ -288,14 +298,14 @@ col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
 
 with col_left:
     st.markdown('<span class="section-label">Upload a file</span>', unsafe_allow_html=True)
-    st.markdown('<span class="section-hint">CSV or Excel file with a column containing VAT numbers</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-hint">CSV or Excel file containing a column with VAT numbers</span>', unsafe_allow_html=True)
     uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
     if uploaded:
         try:
             df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
             vat_col = detect_vat_column(df_input)
             df_input = df_input.fillna("")
-            st.markdown(f"<small style='color:#777'>{len(df_input)} rows loaded &nbsp;·&nbsp; VAT column: {vat_col}</small>", unsafe_allow_html=True)
+            st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(df_input)} rows loaded &nbsp;&middot;&nbsp; VAT column: {vat_col}</span>", unsafe_allow_html=True)
         except Exception as e:
             st.error(f"Error reading file: {e}")
             df_input = None
@@ -311,7 +321,7 @@ with col_or:
 
 with col_right:
     st.markdown('<span class="section-label">Paste VAT numbers</span>', unsafe_allow_html=True)
-    st.markdown('<span class="section-hint">One VAT number per line — e.g. NL800336808B01, DE811115329</span>', unsafe_allow_html=True)
+    st.markdown('<span class="section-hint">One VAT number per line &nbsp;&mdash;&nbsp; e.g. NL800336808B01, DE811115329</span>', unsafe_allow_html=True)
     pasted = st.text_area("paste", height=158,
         placeholder="NL800336808B01\nDE811115329\nBE0999999999",
         key="paste_input", label_visibility="collapsed")
@@ -320,7 +330,7 @@ with col_right:
         if lines:
             df_input = pd.DataFrame({"vat_number": lines})
             vat_col = "vat_number"
-            st.markdown(f"<small style='color:#777'>{len(lines)} VAT number(s) ready for validation</small>", unsafe_allow_html=True)
+            st.markdown(f"<span style='color:#aaaaaa; font-size:0.9rem;'>{len(lines)} VAT number(s) ready for validation</span>", unsafe_allow_html=True)
 
 # ─── VALIDATE BUTTON ────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
@@ -330,7 +340,7 @@ if df_input is not None and len(df_input) > 0:
         if st.button(f"Validate {len(df_input)} VAT numbers", use_container_width=True):
             run_validation(df_input, vat_col)
 else:
-    st.markdown("<small style='color:#444'>Upload a file or paste VAT numbers to get started.</small>", unsafe_allow_html=True)
+    st.markdown("<span style='color:#555555; font-size:0.9rem;'>Upload a file or paste VAT numbers to get started.</span>", unsafe_allow_html=True)
 
 # ─── RESULTS ────────────────────────────────
 if st.session_state.results is not None:
@@ -344,10 +354,26 @@ if st.session_state.results is not None:
 
     st.markdown(f"""
 <div class="stat-row">
-  <div class="stat-card total"><div class="stat-num">{total}</div><div class="stat-lbl">Total</div></div>
-  <div class="stat-card valid"><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Valid</div></div>
-  <div class="stat-card invalid"><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Invalid</div></div>
-  <div class="stat-card error"><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Error</div></div>
+  <div class="stat-card total">
+    <div class="stat-icon">#</div>
+    <div class="stat-num">{total}</div>
+    <div class="stat-lbl">Total</div>
+  </div>
+  <div class="stat-card valid">
+    <div class="stat-icon">&#10003;</div>
+    <div class="stat-num">{len(valid_df)}</div>
+    <div class="stat-lbl">Valid</div>
+  </div>
+  <div class="stat-card invalid">
+    <div class="stat-icon">&#10007;</div>
+    <div class="stat-num">{len(invalid_df)}</div>
+    <div class="stat-lbl">Invalid</div>
+  </div>
+  <div class="stat-card error">
+    <div class="stat-icon">!</div>
+    <div class="stat-num">{len(error_df)}</div>
+    <div class="stat-lbl">Error</div>
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -361,19 +387,21 @@ if st.session_state.results is not None:
             use_container_width=True
         )
     with col_reset:
-        st.markdown('<div class="reset-btn">', unsafe_allow_html=True)
         if st.button("Reset", use_container_width=True):
             st.session_state.results = None
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # Style status column — color + symbol, works without color perception
     def style_status(val):
         return {
-            "valid":   "color: #22c55e; font-weight: 600;",
-            "invalid": "color: #E30613; font-weight: 600;"
-        }.get(val, "color: #f59e0b; font-weight: 600;")
+            "valid":   "color: #4a9d6f; font-weight: 600;",
+            "invalid": "color: #E30613; font-weight: 600;",
+        }.get(val, "color: #c97d20; font-weight: 600;")
+
+    # Display label column instead of raw status
+    display_cols = [c for c in df_res.columns if c != "Status"]
 
     t1, t2, t3, t4 = st.tabs([
         f"All results ({total})",
@@ -382,22 +410,25 @@ if st.session_state.results is not None:
         f"Error ({len(error_df)})"
     ])
     with t1:
-        st.dataframe(df_res.style.applymap(style_status, subset=["Status"]), use_container_width=True, hide_index=True, height=400)
+        st.dataframe(
+            df_res[display_cols].style.applymap(style_status, subset=["Status Label"]),
+            use_container_width=True, hide_index=True, height=400
+        )
     with t2:
         if len(valid_df) > 0:
-            st.dataframe(valid_df, use_container_width=True, hide_index=True, height=400)
+            st.dataframe(valid_df[display_cols], use_container_width=True, hide_index=True, height=400)
         else:
             st.info("No valid VAT numbers found.")
     with t3:
         if len(invalid_df) > 0:
-            st.dataframe(invalid_df, use_container_width=True, hide_index=True, height=400)
+            st.dataframe(invalid_df[display_cols], use_container_width=True, hide_index=True, height=400)
         else:
-            st.success("No invalid VAT numbers found.")
+            st.info("No invalid VAT numbers found.")
     with t4:
         if len(error_df) > 0:
-            st.dataframe(error_df, use_container_width=True, hide_index=True, height=400)
+            st.dataframe(error_df[display_cols], use_container_width=True, hide_index=True, height=400)
         else:
-            st.success("No errors found.")
+            st.info("No errors found.")
 
 st.markdown("---")
-st.markdown("<p style='color:#2a2a2a; font-size:0.75rem; text-align:center;'>Mammoet Data Migration Team &nbsp;·&nbsp; VIES API (European Commission) &nbsp;·&nbsp; SAP ECC → S/4HANA</p>", unsafe_allow_html=True)
+st.markdown("<p style='color:#333333; font-size:0.8rem; text-align:center;'>Mammoet Data Migration Team &nbsp;&middot;&nbsp; VIES API (European Commission) &nbsp;&middot;&nbsp; SAP ECC &rarr; S/4HANA</p>", unsafe_allow_html=True)
