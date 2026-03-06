@@ -104,63 +104,71 @@ st.markdown("""
         padding: 1rem 1.25rem; font-size: 0.9rem; color: #bbb; margin-bottom: 1rem;
     }
 
-    /* SAP Window styling */
-    .sap-window {
-        background: #f0f0f0; border: 2px solid #808080; border-radius: 3px;
-        font-family: 'Courier New', monospace; color: #000;
-        overflow: hidden; box-shadow: 3px 3px 8px rgba(0,0,0,0.5);
+    /* SAP Window — exact SAP GUI look */
+    .sap-outer {
+        background: #e0ddd0; border: 2px solid #999; padding: 6px;
+        font-family: Arial, sans-serif; max-width: 500px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
     }
-    .sap-titlebar {
-        background: linear-gradient(180deg, #0050a0 0%, #003878 100%);
-        color: white; padding: 4px 8px; font-size: 12px; font-weight: bold;
-        font-family: 'Courier New', monospace; display: flex; align-items: center;
-    }
-    .sap-titlebar-btns { margin-left: auto; display: flex; gap: 2px; }
-    .sap-titlebar-btn {
-        background: #c0c0c0; color: #000; border: 1px solid #808080;
-        padding: 0 5px; font-size: 10px; cursor: default; border-radius: 1px;
-    }
-    .sap-tabs { background: #d4d0c8; border-bottom: 2px solid #808080; display: flex; }
+    .sap-tabs { display: flex; gap: 2px; margin-bottom: 0; }
     .sap-tab {
-        padding: 3px 10px; font-size: 11px; font-family: 'Courier New', monospace;
-        border-right: 1px solid #808080; cursor: default; color: #000;
+        padding: 3px 12px; font-size: 11px; cursor: default; color: #000;
+        background: #c8c4b4; border: 1px solid #999; border-bottom: none;
+        border-radius: 3px 3px 0 0; font-family: Arial, sans-serif;
     }
     .sap-tab.active {
-        background: #f0f0f0; border-bottom: 2px solid #f0f0f0;
-        margin-bottom: -2px; font-weight: bold;
+        background: #e0ddd0; font-weight: bold;
+        border-bottom: 1px solid #e0ddd0; margin-bottom: -1px; z-index: 1;
     }
-    .sap-grid-header {
-        background: #c0c0c0; border-bottom: 1px solid #808080;
-        padding: 3px 8px; font-size: 11px; font-weight: bold;
-        color: #000; font-family: 'Courier New', monospace;
+    .sap-inner {
+        border: 1px solid #999; background: #e0ddd0;
     }
-    .sap-grid-body { background: white; }
-    .sap-grid-row { display: flex; border-bottom: 1px solid #e0e0e0; }
-    .sap-grid-row.active-row { background: #c5d9f1; }
-    .sap-row-num {
-        width: 30px; min-width: 30px; background: #e0e0e0;
-        border-right: 1px solid #ccc; text-align: center;
-        font-size: 11px; color: #555; padding: 2px 0; line-height: 20px;
-        font-family: 'Courier New', monospace;
+    .sap-col-header {
+        display: flex; background: #c8c4b4; border-bottom: 1px solid #999;
+        font-size: 11px; font-weight: bold; font-family: Arial, sans-serif;
+    }
+    .sap-col-o { width: 22px; min-width: 22px; border-right: 1px solid #999; text-align: center; padding: 2px 0; font-size: 10px; }
+    .sap-col-sv { flex: 1; padding: 2px 4px; }
+    .sap-col-icon { width: 22px; border-left: 1px solid #999; text-align: center; padding: 2px 0; }
+    .sap-grid-area { display: flex; }
+    .sap-grid-rows { flex: 1; background: white; overflow: hidden; border-right: 1px solid #ccc; }
+    .sap-scrollbar {
+        width: 14px; background: #c8c4b4; border-left: 1px solid #999;
+        display: flex; flex-direction: column; align-items: center;
+    }
+    .sap-scroll-up, .sap-scroll-dn {
+        width: 14px; height: 14px; background: #c8c4b4; border: 1px solid #888;
+        font-size: 8px; display: flex; align-items: center; justify-content: center; cursor: default;
+    }
+    .sap-scroll-track { flex: 1; width: 12px; background: #b0ad9e; border: 1px solid #999; margin: 1px; }
+    .sap-grid-row { display: flex; height: 20px; border-bottom: 1px solid #e8e8e8; }
+    .sap-row-cb {
+        width: 22px; min-width: 22px; background: #e8c840;
+        border-right: 1px solid #d4b830; display: flex; align-items: center; justify-content: center;
+        font-size: 9px;
     }
     .sap-row-val {
-        flex: 1; padding: 2px 8px; font-size: 12px;
-        font-family: 'Courier New', monospace; color: #000080; line-height: 20px;
+        flex: 1; padding: 1px 4px; font-size: 12px;
+        font-family: 'Courier New', monospace; color: #000; line-height: 18px;
     }
-    .sap-row-val.empty { color: #bbb; }
-    .sap-toolbar {
-        background: #d4d0c8; border-top: 1px solid #808080;
-        padding: 3px 6px; display: flex; gap: 4px; flex-wrap: wrap;
+    .sap-row-val.selected { background: #b8d4f0; border: 1px inset #6090c0; }
+    .sap-hscroll {
+        background: #c8c4b4; border-top: 1px solid #999; height: 14px;
+        display: flex; align-items: center; padding: 0 1px; gap: 1px;
     }
-    .sap-btn {
-        background: #d4d0c8; border: 1px solid #808080; padding: 1px 8px;
-        font-size: 11px; font-family: 'Courier New', monospace;
-        cursor: default; color: #000; border-radius: 1px;
+    .sap-hs-btn { width: 12px; height: 12px; background: #c8c4b4; border: 1px solid #888; font-size: 7px; display: flex; align-items: center; justify-content: center; }
+    .sap-hs-track { flex: 1; height: 8px; background: #b0ad9e; border: 1px solid #999; }
+    .sap-bottom-bar {
+        background: #e0ddd0; border-top: 1px solid #999; padding: 4px;
+        display: flex; align-items: center; justify-content: center; gap: 3px;
     }
-    .sap-statusbar {
-        background: #d4d0c8; border-top: 1px solid #808080;
-        padding: 2px 8px; font-size: 11px; color: #000;
-        font-family: 'Courier New', monospace;
+    .sap-icon-btn {
+        width: 22px; height: 22px; background: #d4d0c0; border: 1px solid #888;
+        font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: default;
+    }
+    .sap-multi-btn {
+        background: #d4d0c0; border: 1px solid #888; padding: 2px 8px;
+        font-size: 11px; font-family: Arial, sans-serif; cursor: default; margin-left: 6px;
     }
 
     #MainMenu, footer, header { visibility: hidden; }
@@ -369,45 +377,64 @@ with tab_paste:
     col_sap, col_helptxt = st.columns([1, 1], gap="large")
 
     with col_sap:
-        st.markdown("""
-<div class="sap-window">
-  <div class="sap-titlebar">
-    📋 Multiple Selection for VAT Number
-    <div class="sap-titlebar-btns">
-      <span class="sap-titlebar-btn">_</span>
-      <span class="sap-titlebar-btn">□</span>
-      <span class="sap-titlebar-btn">✕</span>
-    </div>
-  </div>
-  <div class="sap-tabs">
-    <div class="sap-tab active">Select Single Values (1)</div>
-    <div class="sap-tab">Select Ranges</div>
-    <div class="sap-tab">Exclude Single Values</div>
-    <div class="sap-tab">Exclude Ranges</div>
-  </div>
-  <div class="sap-grid-header">◉ Single value</div>
-</div>
-""", unsafe_allow_html=True)
-
         pasted = st.text_area(
             "BTW-nummers:",
-            height=200,
-            placeholder="NL800336808B01\nDE811115329\nBE0999999999\n...",
+            height=1,
+            placeholder="Plak hier BTW-nummers (één per regel)...",
             key="paste_input",
             label_visibility="collapsed"
         )
 
-        row_count = len([l for l in (pasted or "").splitlines() if l.strip()])
+        lines_input = [l.strip() for l in (pasted or "").splitlines() if l.strip()]
+        num_rows = 8
+        rows_html = ""
+        for i in range(num_rows):
+            if i < len(lines_input):
+                selected = "selected" if i == 0 else ""
+                rows_html += f'<div class="sap-grid-row"><div class="sap-row-cb"></div><div class="sap-row-val {selected}">{lines_input[i]}</div></div>'
+            else:
+                rows_html += '<div class="sap-grid-row"><div class="sap-row-cb"></div><div class="sap-row-val"></div></div>'
+
         st.markdown(f"""
-<div class="sap-window">
-  <div class="sap-toolbar">
-    <span class="sap-btn">✔ Execute</span>
-    <span class="sap-btn">📋 Paste All</span>
-    <span class="sap-btn">🗑 Delete All</span>
-    <span class="sap-btn">↑ Move Up</span>
-    <span class="sap-btn">↓ Move Down</span>
+<div class="sap-outer">
+  <div class="sap-tabs">
+    <div class="sap-tab active">Select Single Values ({len(lines_input)})</div>
+    <div class="sap-tab">Select Ranges</div>
+    <div class="sap-tab">Exclude Single Values</div>
+    <div class="sap-tab">Exclude Ranges</div>
   </div>
-  <div class="sap-statusbar">Ready &nbsp;|&nbsp; Rows: <b>{row_count}</b></div>
+  <div class="sap-inner">
+    <div class="sap-col-header">
+      <div class="sap-col-o">O.</div>
+      <div class="sap-col-sv">Single value</div>
+      <div class="sap-col-icon">⊞</div>
+    </div>
+    <div class="sap-grid-area">
+      <div class="sap-grid-rows">{rows_html}</div>
+      <div class="sap-scrollbar">
+        <div class="sap-scroll-up">▲</div>
+        <div class="sap-scroll-track"></div>
+        <div class="sap-scroll-dn">▼</div>
+      </div>
+    </div>
+    <div class="sap-hscroll">
+      <div class="sap-hs-btn">◀</div>
+      <div class="sap-hs-track"></div>
+      <div class="sap-hs-btn">▶</div>
+    </div>
+  </div>
+  <div class="sap-bottom-bar">
+    <div class="sap-icon-btn">⊙</div>
+    <div class="sap-icon-btn" style="color:#006600">✔</div>
+    <div class="sap-icon-btn">⊕</div>
+    <div class="sap-icon-btn">📋</div>
+    <div class="sap-icon-btn">🗑</div>
+    <div class="sap-icon-btn">ℹ</div>
+    <div class="sap-multi-btn">Multiple selection...</div>
+    <div class="sap-icon-btn" style="margin-left:6px">📋</div>
+    <div class="sap-icon-btn">⊠</div>
+    <div class="sap-icon-btn" style="color:#cc0000">✖</div>
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
