@@ -339,12 +339,14 @@ with col_right:
 
 # ─── VALIDATE BUTTON ────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
-if df_input is not None and len(df_input) > 0:
-    col_btn, col_spacer = st.columns([2, 8])
-    with col_btn:
-        if st.button(f"Validate {len(df_input)} VAT numbers", use_container_width=True):
-            run_validation(df_input, vat_col)
-else:
+col_btn, col_spacer = st.columns([2, 8])
+with col_btn:
+    has_input = df_input is not None and len(df_input) > 0
+    label = f"Validate {len(df_input)} VAT numbers" if has_input else "Validate VAT numbers"
+    clicked = st.button(label, use_container_width=True, disabled=not has_input)
+    if clicked and has_input:
+        run_validation(df_input, vat_col)
+if df_input is None or len(df_input) == 0:
     st.markdown("<span style='color:#555555; font-size:0.9rem;'>Upload a file or paste VAT numbers to get started.</span>", unsafe_allow_html=True)
 
 # ─── RESULTS ────────────────────────────────
