@@ -392,7 +392,7 @@ if df_input is None or len(df_input) == 0:
 # Auto-scroll to results
 if st.session_state.get("scroll_to_results"):
     st.components.v1.html(
-        '<script>setTimeout(function(){window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});}, 300);</script>',
+        '<script>setTimeout(function(){window.parent.scrollTo({top: window.parent.document.body.scrollHeight, behavior: "smooth"});}, 400);</script>',
         height=0
     )
     st.session_state.scroll_to_results = False
