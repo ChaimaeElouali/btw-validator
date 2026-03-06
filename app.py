@@ -27,7 +27,7 @@ st.markdown("""
     /* Remove white card/border around page */
     .stApp > div { background: transparent !important; }
     .block-container {
-        padding: 0 !important;
+        padding: 1.5rem 2.5rem !important;
         max-width: 100% !important;
     }
 
