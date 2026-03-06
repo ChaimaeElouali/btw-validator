@@ -1,12 +1,5 @@
 """
 BTW Validator — Mammoet Data Migration
-Streamlit webapplicatie voor validatie van BTW-nummers via VIES API.
-
-Installatie:
-    pip install streamlit pandas openpyxl requests
-
-Starten:
-    streamlit run app.py
 """
 
 import time
@@ -21,7 +14,7 @@ import requests
 st.set_page_config(
     page_title="BTW Validator | Mammoet",
     page_icon="🔍",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -30,125 +23,158 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 
     html, body, [class*="css"] { font-family: 'Barlow', sans-serif; }
-    .stApp { background-color: #111111; color: #f0f0f0; }
+    .stApp { background-color: #0f0f0f; color: #f0f0f0; }
+    .block-container { padding-top: 0 !important; max-width: 900px; margin: 0 auto; }
 
+    /* ── Hero ── */
     .hero {
-        background: #111111;
-        border-bottom: 4px solid #E30613;
-        padding: 2.2rem 0 1.8rem;
+        border-bottom: 3px solid #E30613;
+        padding: 2.2rem 0 1.6rem;
         margin-bottom: 2.5rem;
     }
     .hero-title {
         font-family: 'Barlow Condensed', sans-serif;
-        font-size: 2.8rem; font-weight: 800; color: #fff;
-        letter-spacing: -0.5px; margin: 0; line-height: 1;
+        font-size: 3rem; font-weight: 800; color: #fff;
+        letter-spacing: -1px; margin: 0; line-height: 1;
     }
     .hero-title span { color: #E30613; }
     .hero-sub {
-        color: #666; font-size: 0.8rem; margin-top: 0.5rem;
-        font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+        color: #555; font-size: 0.78rem; margin-top: 0.5rem;
+        font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
     }
 
-    .section-label {
-        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 1.5px; color: #888; margin-bottom: 0.5rem;
+    /* ── Input cards ── */
+    .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 40px 1fr;
+        gap: 0;
+        align-items: stretch;
+        margin-bottom: 1.5rem;
     }
-
-    .or-bar {
-        display: flex; align-items: center; gap: 1rem;
-        margin: 1.2rem 0; color: #444;
-        font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    .input-card {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
     }
-    .or-bar::before, .or-bar::after {
-        content: ''; flex: 1; height: 1px; background: #2a2a2a;
-    }
-
-    .validate-hint {
-        color: #555; font-size: 0.85rem; font-style: italic; margin-top: 0.5rem;
-    }
-
-    .stat-card {
-        background: #1a1a1a; border-radius: 8px; padding: 1.25rem;
-        text-align: center; border: 1px solid #2a2a2a;
-    }
-    .stat-card.valid   { border-top: 4px solid #22c55e; }
-    .stat-card.invalid { border-top: 4px solid #E30613; }
-    .stat-card.error   { border-top: 4px solid #f59e0b; }
-    .stat-card.total   { border-top: 4px solid #555; }
-    .stat-number {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 2.8rem; font-weight: 800; line-height: 1;
-    }
-    .stat-label {
+    .input-card:hover { border-color: #3a3a3a; }
+    .card-label {
         font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 1px; color: #666; margin-top: 0.25rem;
+        letter-spacing: 2px; color: #E30613; margin-bottom: 0.25rem;
     }
-    .valid   .stat-number { color: #22c55e; }
-    .invalid .stat-number { color: #E30613; }
-    .error   .stat-number { color: #f59e0b; }
-    .total   .stat-number { color: #aaa; }
-
-    /* Buttons */
-    .stButton > button {
-        background: #E30613 !important; color: white !important;
-        border: none !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important; font-size: 1rem !important;
-        padding: 0.7rem 2rem !important; border-radius: 6px !important;
-        width: 100% !important;
+    .card-desc { font-size: 0.85rem; color: #666; margin: 0; }
+    .or-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 1rem 0;
     }
-    .stButton > button:hover { background: #c0050f !important; }
-
-    .stDownloadButton > button {
-        background: #1a1a1a !important; color: #f0f0f0 !important;
-        border: 1px solid #333 !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important; border-radius: 6px !important;
-        width: 100% !important;
+    .or-line { flex: 1; width: 1px; background: #2a2a2a; }
+    .or-text {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+        text-transform: uppercase; color: #3a3a3a;
+        padding: 4px 0;
     }
 
-    /* File uploader */
+    /* ── File uploader override ── */
     [data-testid="stFileUploader"] {
-        background: #1a1a1a !important;
-        border: 2px dashed #2a2a2a !important;
-        border-radius: 8px;
+        background: #111 !important;
     }
-    [data-testid="stFileUploader"]:hover {
+    [data-testid="stFileUploader"] > div {
+        background: #111 !important;
+        border: 2px dashed #2a2a2a !important;
+        border-radius: 8px !important;
+        padding: 1.5rem !important;
+        transition: border-color 0.2s;
+    }
+    [data-testid="stFileUploader"] > div:hover {
         border-color: #E30613 !important;
     }
+    [data-testid="stFileUploader"] button {
+        background: #2a2a2a !important;
+        color: #f0f0f0 !important;
+        border: none !important;
+        border-radius: 4px !important;
+    }
+    [data-testid="stFileUploader"] p,
+    [data-testid="stFileUploader"] small { color: #555 !important; }
 
-    /* Textarea */
+    /* ── Textarea ── */
     textarea {
-        background: #1a1a1a !important;
+        background: #111 !important;
         color: #f0f0f0 !important;
         border: 2px solid #2a2a2a !important;
         border-radius: 8px !important;
         font-family: 'Barlow', sans-serif !important;
         font-size: 0.9rem !important;
+        transition: border-color 0.2s;
     }
-    textarea:focus {
-        border-color: #E30613 !important;
-        box-shadow: none !important;
+    textarea:focus { border-color: #E30613 !important; box-shadow: none !important; }
+    textarea::placeholder { color: #444 !important; }
+
+    /* ── Validate button ── */
+    .stButton > button {
+        background: #E30613 !important;
+        color: white !important;
+        border: none !important;
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 2.5rem !important;
+        border-radius: 6px !important;
+        letter-spacing: 0.5px;
+        transition: background 0.2s !important;
+    }
+    .stButton > button:hover { background: #c0050f !important; }
+
+    .stDownloadButton > button {
+        background: #1a1a1a !important;
+        color: #f0f0f0 !important;
+        border: 1px solid #333 !important;
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
     }
 
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        background: #1a1a1a;
-        border-bottom: 1px solid #2a2a2a;
-        border-radius: 8px 8px 0 0;
+    /* ── Stat cards ── */
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
+    .stat-card {
+        background: #1a1a1a; border-radius: 8px; padding: 1.25rem 1rem;
+        text-align: center; border: 1px solid #2a2a2a;
     }
+    .stat-card.total   { border-top: 3px solid #555; }
+    .stat-card.valid   { border-top: 3px solid #22c55e; }
+    .stat-card.invalid { border-top: 3px solid #E30613; }
+    .stat-card.error   { border-top: 3px solid #f59e0b; }
+    .stat-num {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 2.5rem; font-weight: 800; line-height: 1;
+    }
+    .stat-lbl { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-top: 4px; }
+    .total   .stat-num { color: #888; }
+    .valid   .stat-num { color: #22c55e; }
+    .invalid .stat-num { color: #E30613; }
+    .error   .stat-num { color: #f59e0b; }
+
+    /* ── Tabs ── */
+    .stTabs [data-baseweb="tab-list"] { background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
     .stTabs [data-baseweb="tab"] {
         color: #555 !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 600 !important; padding: 0.75rem 1.5rem !important;
+        font-weight: 600 !important; padding: 0.7rem 1.5rem !important;
     }
     .stTabs [aria-selected="true"] {
-        color: #fff !important;
-        border-bottom: 3px solid #E30613 !important;
+        color: #fff !important; border-bottom: 3px solid #E30613 !important;
         background: transparent !important;
     }
 
     .stProgress > div > div { background-color: #E30613 !important; }
     hr { border-color: #2a2a2a !important; }
     #MainMenu, footer, header { visibility: hidden; }
-    .block-container { padding-top: 0 !important; max-width: 720px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -184,7 +210,7 @@ def check_vat(country_code, vat_number):
                         "company_address": data.get("address") or "—",
                         "message":"Geldig" if valid else "Ongeldig volgens VIES"}
             elif r.status_code == 404:
-                return {"status":"invalid","company_name":"—","company_address":"—","message":"Niet gevonden in VIES"}
+                return {"status":"invalid","company_name":"—","company_address":"—","message":"Niet gevonden"}
             elif r.status_code in (429,503,504):
                 time.sleep(2**attempt); continue
             else:
@@ -235,7 +261,7 @@ def run_validation(df_input, vat_col):
         raw = str(row[vat_col]).strip()
         country_code, vat_number = parse_vat(raw)
         status_text.markdown(
-            f"<small style='color:#666'>Verwerken {i+1}/{total}: <code style='color:#aaa'>{raw}</code></small>",
+            f"<small style='color:#555'>{i+1}/{total} — <code style='color:#888'>{raw}</code></small>",
             unsafe_allow_html=True)
         result = {"status":"invalid","company_name":"—","company_address":"—","message":"Ongeldig formaat"} \
             if not country_code or not vat_number else check_vat(country_code, vat_number)
@@ -262,44 +288,65 @@ st.markdown("""
 if "results" not in st.session_state:
     st.session_state.results = None
 
-# ─── INPUT ──────────────────────────────────
+# ─── INPUT: twee kaarten naast elkaar ───────
+col_left, col_or, col_right = st.columns([10, 1, 10], gap="small")
+
 df_input = None
 vat_col  = "vat_number"
 
-st.markdown('<div class="section-label">Bestand uploaden — CSV of Excel</div>', unsafe_allow_html=True)
-uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
+with col_left:
+    st.markdown("""
+<div class="input-card">
+  <div class="card-label">📁 Bestand uploaden</div>
+  <p class="card-desc">CSV of Excel met een kolom BTW-nummers</p>
+</div>
+""", unsafe_allow_html=True)
+    uploaded = st.file_uploader("upload", type=["csv","xlsx","xls"], label_visibility="collapsed")
+    if uploaded:
+        try:
+            df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
+            vat_col = detect_vat_column(df_input)
+            df_input = df_input.fillna("")
+            st.markdown(f"<small style='color:#555'>✅ {len(df_input)} rijen · kolom: <code style='color:#888'>{vat_col}</code></small>", unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Fout: {e}")
+            df_input = None
 
-if uploaded:
-    try:
-        df_input = pd.read_csv(uploaded, dtype=str) if uploaded.name.endswith(".csv") else pd.read_excel(uploaded, dtype=str)
-        vat_col = detect_vat_column(df_input)
-        df_input = df_input.fillna("")
-        st.markdown(f"<small style='color:#555'>✅ {len(df_input)} rijen geladen · BTW-kolom: <code style='color:#888'>{vat_col}</code></small>", unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Fout bij inlezen: {e}")
-        df_input = None
+with col_or:
+    st.markdown("""
+<div class="or-col">
+  <div class="or-line"></div>
+  <div class="or-text">of</div>
+  <div class="or-line"></div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('<div class="or-bar">of</div>', unsafe_allow_html=True)
+with col_right:
+    st.markdown("""
+<div class="input-card">
+  <div class="card-label">📋 BTW-nummers plakken</div>
+  <p class="card-desc">Plak nummers uit SAP of Excel, één per regel</p>
+</div>
+""", unsafe_allow_html=True)
+    pasted = st.text_area("paste", height=150,
+        placeholder="NL800336808B01\nDE811115329\nBE0999999999\n...",
+        key="paste_input", label_visibility="collapsed")
+    if not uploaded and pasted and pasted.strip():
+        lines = [l.strip() for l in pasted.splitlines() if l.strip()]
+        if lines:
+            df_input = pd.DataFrame({"vat_number": lines})
+            vat_col = "vat_number"
+            st.markdown(f"<small style='color:#555'>✅ {len(lines)} BTW-nummer(s)</small>", unsafe_allow_html=True)
 
-st.markdown('<div class="section-label">BTW-nummers plakken — één per regel</div>', unsafe_allow_html=True)
-pasted = st.text_area("paste", height=160,
-    placeholder="NL800336808B01\nDE811115329\nBE0999999999\n...",
-    key="paste_input", label_visibility="collapsed")
-
-if not uploaded and pasted and pasted.strip():
-    lines = [l.strip() for l in pasted.splitlines() if l.strip()]
-    if lines:
-        df_input = pd.DataFrame({"vat_number": lines})
-        vat_col = "vat_number"
-        st.markdown(f"<small style='color:#555'>✅ {len(lines)} BTW-nummer(s) geladen</small>", unsafe_allow_html=True)
-
+# ─── VALIDEER KNOP ──────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
-
 if df_input is not None and len(df_input) > 0:
-    if st.button(f"Valideer {len(df_input)} BTW-nummers →"):
-        run_validation(df_input, vat_col)
+    col_btn, col_empty = st.columns([1, 3])
+    with col_btn:
+        if st.button(f"Valideer {len(df_input)} nummers →", use_container_width=True):
+            run_validation(df_input, vat_col)
 else:
-    st.markdown('<div class="validate-hint">Upload een bestand of plak BTW-nummers om te beginnen.</div>', unsafe_allow_html=True)
+    st.markdown("<small style='color:#333'>Upload een bestand of plak BTW-nummers om te beginnen.</small>", unsafe_allow_html=True)
 
 # ─── RESULTATEN ─────────────────────────────
 if st.session_state.results is not None:
@@ -311,15 +358,16 @@ if st.session_state.results is not None:
 
     st.markdown("---")
 
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown(f'<div class="stat-card total"><div class="stat-number">{total}</div><div class="stat-label">Totaal</div></div>', unsafe_allow_html=True)
-    with c2: st.markdown(f'<div class="stat-card valid"><div class="stat-number">{len(valid_df)}</div><div class="stat-label">Geldig</div></div>', unsafe_allow_html=True)
-    with c3: st.markdown(f'<div class="stat-card invalid"><div class="stat-number">{len(invalid_df)}</div><div class="stat-label">Ongeldig</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown(f'<div class="stat-card error"><div class="stat-number">{len(error_df)}</div><div class="stat-label">Fout</div></div>', unsafe_allow_html=True)
+    st.markdown(f"""
+<div class="stat-row">
+  <div class="stat-card total"><div class="stat-num">{total}</div><div class="stat-lbl">Totaal</div></div>
+  <div class="stat-card valid"><div class="stat-num">{len(valid_df)}</div><div class="stat-lbl">Geldig</div></div>
+  <div class="stat-card invalid"><div class="stat-num">{len(invalid_df)}</div><div class="stat-lbl">Ongeldig</div></div>
+  <div class="stat-card error"><div class="stat-num">{len(error_df)}</div><div class="stat-lbl">Fout</div></div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    col_dl, col_reset = st.columns([3,1])
+    col_dl, col_reset, col_empty = st.columns([3, 1, 4])
     with col_dl:
         st.download_button(
             label="📥 Download rapport (.xlsx)",
@@ -350,4 +398,4 @@ if st.session_state.results is not None:
     with t4: st.dataframe(error_df, use_container_width=True, hide_index=True, height=400) if len(error_df) else st.success("Geen fouten.")
 
 st.markdown("---")
-st.markdown("<p style='color:#333;font-size:0.75rem;text-align:center;'>Mammoet Data Migration Team · VIES API (European Commission) · SAP ECC → S/4HANA</p>", unsafe_allow_html=True)
+st.markdown("<p style='color:#2a2a2a;font-size:0.75rem;text-align:center;'>Mammoet Data Migration Team · VIES API (European Commission) · SAP ECC → S/4HANA</p>", unsafe_allow_html=True)
