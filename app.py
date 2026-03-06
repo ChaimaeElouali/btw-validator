@@ -36,7 +36,7 @@ st.markdown("""
         background: #0f0f0f;
         border-bottom: 3px solid #E30613;
         padding: 2rem 2.5rem 1.6rem;
-        margin-bottom: 0;
+        margin: -1.5rem -2.5rem 1.5rem -2.5rem;
     }
     .hero-title {
         font-family: 'Barlow Condensed', sans-serif;
@@ -106,7 +106,7 @@ st.markdown("""
         border: 1px solid #aaaaaa !important;
         font-family: 'Barlow', sans-serif !important;
         font-weight: 600 !important; border-radius: 5px !important;
-        font-size: 0.85rem !important; padding: 0.45rem 1rem !important;
+        font-size: 0.8rem !important; padding: 0.35rem 0.8rem !important;
     }
     .stDownloadButton > button:hover {
         background: #222222 !important; color: #ffffff !important;
