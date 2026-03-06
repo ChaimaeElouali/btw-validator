@@ -23,13 +23,20 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap');
 
     html, body, [class*="css"] { font-family: 'Barlow', sans-serif; }
-    .block-container { padding: 1.5rem 2.5rem !important; max-width: 100% !important; background: #f0f0f0; }
+    .stApp { background-color: #f0f0f0 !important; }
+    /* Remove white card/border around page */
+    .stApp > div { background: transparent !important; }
+    .block-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
 
-    /* ── Hero: stays dark ── */
+    /* ── Hero: full width dark ── */
     .hero {
         background: #0f0f0f;
         border-bottom: 3px solid #E30613;
         padding: 2rem 2.5rem 1.6rem;
+        margin-bottom: 0;
     }
     .hero-title {
         font-family: 'Barlow Condensed', sans-serif;
@@ -42,13 +49,13 @@ st.markdown("""
         font-weight: 400; white-space: nowrap;
     }
 
-    /* ── Main content area: light background ── */
-    .main-area { display: contents; }
+    /* ── Content padding ── */
+    .content-pad { padding: 1.5rem 2.5rem; }
 
     /* ── Section labels ── */
     .section-label {
-        font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 2px; color: #E30613;
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 2px; color: #555555;
         margin-bottom: 0.4rem; display: block;
     }
     .section-hint {
@@ -77,77 +84,82 @@ st.markdown("""
         color: #666666 !important; font-size: 0.95rem !important;
     }
     [data-testid="stFileUploader"] small { color: #888888 !important; }
-    /* Filename clearly visible */
     [data-testid="stFileUploader"] [data-testid="stMarkdownContainer"] p,
-    [data-testid="stFileUploader"] span { color: #111111 !important; font-size: 1rem !important; font-weight: 600 !important; }
+    [data-testid="stFileUploader"] span {
+        color: #111111 !important; font-size: 1rem !important; font-weight: 600 !important;
+    }
 
-    /* ── Buttons ── */
+    /* ── All buttons: red ── */
     .stButton > button {
         background: #E30613 !important; color: #ffffff !important;
         border: none !important; font-family: 'Barlow', sans-serif !important;
         font-weight: 700 !important; font-size: 1rem !important;
-        padding: 0.75rem 2rem !important; border-radius: 5px !important;
+        padding: 0.65rem 1.5rem !important; border-radius: 5px !important;
         white-space: nowrap !important;
     }
     .stButton > button:hover { background: #c0050f !important; }
-    .stButton > button:disabled {
-        background: #cccccc !important; color: #888888 !important;
-    }
-    .stDownloadButton > button {
-        background: #222222 !important; color: #ffffff !important;
-        border: none !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 600 !important; border-radius: 5px !important;
-        font-size: 0.95rem !important; padding: 0.65rem 1.5rem !important;
-    }
-    .stDownloadButton > button:hover { background: #444444 !important; }
+    .stButton > button:disabled { background: #cccccc !important; color: #888888 !important; }
 
-    /* ── Divider line ── */
+    /* ── Download buttons: small, outlined ── */
+    .stDownloadButton > button {
+        background: transparent !important; color: #222222 !important;
+        border: 1px solid #aaaaaa !important;
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 600 !important; border-radius: 5px !important;
+        font-size: 0.85rem !important; padding: 0.45rem 1rem !important;
+    }
+    .stDownloadButton > button:hover {
+        background: #222222 !important; color: #ffffff !important;
+        border-color: #222222 !important;
+    }
+
+    /* ── Divider ── */
     .vert-line {
         width: 1px; background: #cccccc;
         margin: 0 auto; height: 100%; min-height: 400px;
     }
 
-    /* ── Tabs ── */
+    /* ── Tabs: color per type ── */
     .stTabs [data-baseweb="tab-list"] {
-        background: #ffffff;
-        border-bottom: 2px solid #e0e0e0;
-        border-radius: 6px 6px 0 0;
+        background: #f0f0f0;
+        border-bottom: 2px solid #dddddd;
     }
     .stTabs [data-baseweb="tab"] {
         color: #888888 !important; font-family: 'Barlow', sans-serif !important;
-        font-weight: 600 !important; padding: 0.75rem 1.5rem !important;
+        font-weight: 600 !important; padding: 0.7rem 1.2rem !important;
         font-size: 0.95rem !important;
     }
+    /* Tab 1: default */
+    .stTabs [data-baseweb="tab"]:nth-child(1) { color: #333333 !important; }
+    /* Tab 2: Valid — green */
+    .stTabs [data-baseweb="tab"]:nth-child(2) { color: #2d7a4f !important; }
+    /* Tab 3: Invalid — red */
+    .stTabs [data-baseweb="tab"]:nth-child(3) { color: #E30613 !important; }
+    /* Tab 4: Error — orange */
+    .stTabs [data-baseweb="tab"]:nth-child(4) { color: #b05e00 !important; }
     .stTabs [aria-selected="true"] {
-        color: #111111 !important;
+        font-weight: 700 !important;
         border-bottom: 3px solid #E30613 !important;
         background: transparent !important;
     }
-    /* Color the tab labels */
-    .tab-valid   { color: #2d7a4f !important; font-weight: 700 !important; }
-    .tab-invalid { color: #E30613 !important; font-weight: 700 !important; }
-    .tab-error   { color: #b05e00 !important; font-weight: 700 !important; }
 
-    /* ── Info/feedback text ── */
+    /* ── Feedback text ── */
     .feedback-text {
         font-size: 1rem; color: #222222; font-weight: 500;
         margin-top: 0.5rem; display: block;
     }
 
-    /* ── Progress bar ── */
     .stProgress > div > div { background-color: #E30613 !important; }
 
-    /* ── Responsive: stack on mobile ── */
     @media (max-width: 768px) {
-        .hero { padding: 1.5rem 1rem 1.2rem; }
+        .hero { padding: 1.2rem 1rem 1rem; }
         .hero-title { font-size: 2rem; }
-        .hero-sub { font-size: 0.9rem; white-space: normal; }
-        .main-area { padding: 1.2rem 1rem; }
+        .hero-sub { font-size: 0.85rem; white-space: normal; }
+        .content-pad { padding: 1rem; }
     }
 
     hr { border-color: #dddddd !important; }
     #MainMenu, footer, header { visibility: hidden; }
-    .stApp { background-color: #f0f0f0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -285,8 +297,8 @@ st.markdown("""
 if "results" not in st.session_state:
     st.session_state.results = None
 
-# ─── MAIN AREA (light) ──────────────────────
-st.markdown('<div class="main-area">', unsafe_allow_html=True)
+# ─── MAIN AREA ──────────────────────────────
+st.markdown('<div class="content-pad">', unsafe_allow_html=True)
 
 df_input = None
 vat_col  = "vat_number"
