@@ -149,6 +149,12 @@ st.markdown("""
         margin-top: 0.5rem; display: block;
     }
 
+    /* Selectbox styling */
+    [data-testid="stSelectbox"] > div > div {
+        background: #ffffff !important; border: 1px solid #cccccc !important;
+        border-radius: 5px !important; font-size: 0.85rem !important;
+        color: #222222 !important;
+    }
     .stProgress > div > div { background-color: #E30613 !important; }
 
     @media (max-width: 768px) {
@@ -386,30 +392,59 @@ with col_right:
 
         st.markdown('<span class="section-label">Results</span>', unsafe_allow_html=True)
 
-        col_dl1, col_dl2, col_rst = st.columns([3, 3, 1])
-        with col_dl1:
-            st.download_button("Download (.xlsx)", data=to_excel_bytes(df_res),
-                file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True)
-        with col_dl2:
-            st.download_button("Download (.xml)", data=to_xml_bytes(df_res),
-                file_name=f"vat_validation_{datetime.now().strftime('%Y%m%d_%H%M')}.xml",
-                mime="application/xml", use_container_width=True)
-        with col_rst:
-            if st.button("Reset", use_container_width=True):
-                st.session_state.results = None
-                st.rerun()
-
-        st.markdown("<br>", unsafe_allow_html=True)
-
         def style_status(val):
             return {
                 "valid":   "color: #2d7a4f; font-weight: 700;",
                 "invalid": "color: #E30613; font-weight: 700;",
             }.get(val, "color: #b05e00; font-weight: 700;")
 
-        display_cols = [c for c in df_res.columns if c != "Status"]
+        all_cols = [c for c in df_res.columns if c != "Status"]
+        always_on = ["VAT Input", "Status Label"]
+        optional_cols = [c for c in all_cols if c not in always_on]
+        default_cols = [c for c in ["VAT Input", "Status Label", "Company (VIES)", "Message"] if c in all_cols]
+
+        if "selected_cols" not in st.session_state:
+            st.session_state.selected_cols = default_cols
+
+        # ── Single toolbar row: columns selector | download | reset ──
+        col_sel, col_fmt, col_dl, col_rst = st.columns([5, 2, 2, 1], gap="small")
+
+        with col_sel:
+            chosen = st.multiselect(
+                "Columns",
+                options=optional_cols,
+                default=[c for c in st.session_state.selected_cols if c in optional_cols and c not in always_on],
+                label_visibility="collapsed",
+                placeholder="Add columns..."
+            )
+            st.session_state.selected_cols = chosen
+
+        display_cols = always_on + [c for c in all_cols if c in chosen and c not in always_on]
+        ts = datetime.now().strftime('%Y%m%d_%H%M')
+
+        with col_fmt:
+            fmt = st.selectbox("Format", ["xlsx", "csv", "xml"], label_visibility="collapsed")
+
+        with col_dl:
+            if fmt == "xlsx":
+                st.download_button("Download", data=to_excel_bytes(df_res),
+                    file_name=f"vat_validation_{ts}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True)
+            elif fmt == "csv":
+                st.download_button("Download", data=df_res.to_csv(index=False).encode("utf-8"),
+                    file_name=f"vat_validation_{ts}.csv",
+                    mime="text/csv", use_container_width=True)
+            else:
+                st.download_button("Download", data=to_xml_bytes(df_res),
+                    file_name=f"vat_validation_{ts}.xml",
+                    mime="application/xml", use_container_width=True)
+
+        with col_rst:
+            if st.button("Reset", use_container_width=True):
+                st.session_state.results = None
+                st.session_state.selected_cols = default_cols
+                st.rerun()
 
         t1, t2, t3, t4 = st.tabs([
             f"All results ({total})",
